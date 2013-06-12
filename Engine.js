@@ -1,35 +1,48 @@
 /*jshint node: true */
-var q = require('q'),
+var cache = require('./cache'),
+    q = require('q'),
     url = require('url'),
     protocols = {
       'http:': require('http'),
       'https:': require('https')
     };
 
-function makeApi(protocol, urlParts) {
+function makeApi(apiName, protocol, urlParts) {
   return function (term) {
-    var d = q.defer(),
-        result = '',
+    var result = '',
+        engineId = this.id,
+        cacheKey = 'fifi-' + engineId + '-' + apiName + '-' + term,
+        cacheProxy = this[apiName + 'Cache'],
         url = urlParts[0] +
               encodeURIComponent(term) +
               urlParts[1];
 
-console.log('API CALLING TO: ' + url);
-    protocol.get(url, function(res) {
-      res.setEncoding('utf8');
-      res.on("data", function(chunk) {
-        result += chunk;
-      });
-      res.on("end", function() {
-console.log('END CALLED: ' + result);
+    // First check in local cache
+    return cacheProxy.get(cacheKey).then(function (value) {
+      // If a valid value, just return it.
+      if (value) {
+        console.log('USING CACHE: ' + engineId + ':' + term);
+        return value;
+      }
 
-        d.resolve(result);
+      console.log('CALLING SERVICE: ' + engineId + ':' + term);
+
+      var d = q.defer();
+      protocol.get(url, function(res) {
+        res.setEncoding('utf8');
+        res.on("data", function(chunk) {
+          result += chunk;
+        });
+        res.on("end", function() {
+          d.resolve(result);
+          cacheProxy.set(cacheKey, result);
+        });
+      }).on('error', function(e) {
+        d.reject(e);
       });
-    }).on('error', function(e) {
-      d.reject(e);
+
+      return d.promise;
     });
-
-    return d.promise;
   };
 }
 
@@ -49,8 +62,24 @@ function Engine(opts) {
   this.queryParts = this.queryUrl.split('{searchTerms}');
 
   // Create API methods
-  this.suggest = makeApi(protocols[this.suggestObj.protocol], this.suggestParts);
-  this.query = makeApi(protocols[this.queryObj.protocol], this.queryParts);
+  this.suggest = makeApi('suggest',
+                         protocols[this.suggestObj.protocol],
+                         this.suggestParts);
+  this.query = makeApi('query',
+                       protocols[this.queryObj.protocol],
+                       this.queryParts);
+
+  // Create cache proxies
+  this.suggestCache = cache(this.suggestCacheMs);
+  this.queryCache = cache(this.queryCacheMs);
 }
+
+Engine.prototype = {
+  // These properties are on the prototype, so that they can be
+  // overridden by constructor options for specific instances.
+
+  suggestCacheMs: (4 /*hours*/ * 60 /*minutes*/ * 60 * 1000),
+  queryCacheMs:   (1 /*hours*/ * 60 /*minutes*/ * 60 * 1000),
+};
 
 module.exports = Engine;
