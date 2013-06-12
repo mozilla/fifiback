@@ -33,12 +33,22 @@ io.configure(function () {
 
 io.sockets.on('connection', function (socket) {
   socket.on('api/suggest', function (data) {
-      var set = data.set || engines.config.suggestSet;
+      var set = data.set || engines.config.suggestSet,
+          term = (data.term && data.term.trim()) || '';
+
       set.forEach(function (engineId) {
-        engines.suggest(data.term, engineId).then(function (result) {
+        // Fast path for no term
+        if (!term) {
+          return socket.emit('api/suggested', {
+            engineId: engineId,
+            term: term
+          });
+        }
+
+        engines.suggest(term, engineId).then(function (result) {
           socket.emit('api/suggested', {
             engineId: engineId,
-            term: data.term,
+            term: term,
             result: result
           });
         }, function (err) {
@@ -46,16 +56,24 @@ io.sockets.on('connection', function (socket) {
           console.error('ERROR: ' + err);
           socket.emit('api/suggested', {
             engineId: engineId,
-            term: data.term
+            term: term
           });
         });
       });
   });
   socket.on('api/query', function(data) {
-    engines.query(data.term, data.engineId).then(function (result) {
+    var term = (data.term && data.term.trim()) || '';
+    if (!term) {
+      return socket.emit('api/suggested', {
+        engineId: data.engineId,
+        term: term
+      });
+    }
+
+    engines.query(term, data.engineId).then(function (result) {
       socket.emit('api/queried', {
         engineId: data.engineId,
-        term: data.term,
+        term: term,
         result: result
       });
     }, function (err) {
@@ -63,7 +81,7 @@ io.sockets.on('connection', function (socket) {
       console.error('ERROR: ' + err);
       socket.emit('api/queried', {
         engineId: data.engineId,
-        term: data.term
+        term: term
       });
     });
   });

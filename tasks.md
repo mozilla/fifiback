@@ -1,4 +1,5 @@
 
+* add in translators
 * Hook up geo for yelp
     * Need to change how url parsing in Engine works.
 * Wire up to a domain with an SSL cert.
