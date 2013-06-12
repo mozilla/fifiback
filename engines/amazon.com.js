@@ -1,4 +1,4 @@
-module.exports = (new require('../Engine'))({
+module.exports = new (require('../Engine'))({
   "id": "amazon.com",
   "name": "Amazon.com",
   "site": "http://d2lo25i6d3q8zm.cloudfront.net/browser-plugins/AmazonSearchSuggestionsOSD.Firefox.xml",

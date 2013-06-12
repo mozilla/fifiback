@@ -1,4 +1,4 @@
-module.exports = (new require('../Engine'))({
+module.exports = new (require('../Engine'))({
   "id": "ebay.com",
   "name": "eBay",
   "site": "http://search.ebay.com/",

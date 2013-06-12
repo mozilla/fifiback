@@ -10,6 +10,7 @@ function makeApi(apiName) {
     var d,
         impl = impls[engineId];
 
+console.log('IN MAKEAPI, ' + engineId + ', ' + apiName + ', ' + term + ' + IMPL IS: ' + impl);
     //Just ignore search engines we do not know
     if (!impl) {
       d = q.defer();
@@ -26,15 +27,18 @@ var engines = {
   search: makeApi('search'),
 
   loadConfig: function () {
-    var filePath = path.join(__dirname, 'config.json'),
+    var fileNames,
+        filePath = path.join(__dirname, 'config.json'),
         jsExtRegExp = /\.js$/;
-console.log('CONFIG FILE IS: ' + filePath);
 
     this.config = config = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+console.log('NOW IN LOAD CONFIG: ' + path.join(__dirname, 'engines'));
 
-    fs.readdirSync(path.join(__dirname, 'engines'), function (fileName) {
-      var id = fileName .replace(jsExtRegExp, '');
+    fileNames = fs.readdirSync(path.join(__dirname, 'engines'));
+    fileNames.forEach(function (fileName) {
+      var id = fileName.replace(jsExtRegExp, '');
       impls[id] = require('./engines/' + id);
+console.log('SETTING IMPL FOR: ' + id + ': ' + impls[id]);
     });
   }
 

@@ -1,3 +1,4 @@
+/*jshint node: true */
 var engines = require('./engines'),
     express = require('express'),
     socketIo = require('socket.io'),
@@ -11,7 +12,7 @@ app.get('/', function(request, response) {
 
 
 app.get('/api/:query?', function(request, response) {
-  var query = req.params.query;
+  var query = response.params.query;
 
   response.send('Hello: ' + query);
 });
@@ -37,13 +38,15 @@ io.sockets.on('connection', function (socket) {
         engines.suggest(data.term, engineId).then(function (result) {
           socket.emit('api/suggested', {
             engineId: engineId,
+            term: data.term,
             result: result
           });
         }, function (err) {
           //Just eat errors for now.
           console.error('ERROR: ' + err);
           socket.emit('api/suggested', {
-            engineId: engineId
+            engineId: engineId,
+            term: data.term
           });
         });
       });
@@ -51,14 +54,16 @@ io.sockets.on('connection', function (socket) {
   socket.on('api/query', function(data) {
     engines.query(data.term, data.engineId).then(function (result) {
       socket.emit('api/queried', {
-        engineId: engineId,
+        engineId: data.engineId,
+        term: data.term,
         result: result
       });
     }, function (err) {
       //Just eat errors for now.
       console.error('ERROR: ' + err);
       socket.emit('api/queried', {
-        engineId: engineId
+        engineId: data.engineId,
+        term: data.term
       });
     });
   });

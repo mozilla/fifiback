@@ -14,12 +14,15 @@ function makeApi(protocol, urlParts) {
               encodeURIComponent(term) +
               urlParts[1];
 
-    protocols[protocol].get(url, function(res) {
+console.log('API CALLING TO: ' + url);
+    protocol.get(url, function(res) {
       res.setEncoding('utf8');
       res.on("data", function(chunk) {
         result += chunk;
       });
       res.on("end", function() {
+console.log('END CALLED: ' + result);
+
         d.resolve(result);
       });
     }).on('error', function(e) {
@@ -42,8 +45,8 @@ function Engine(opts) {
 
   // Then convert the query strings to allow for easy array join with search
   // terms.
-  this.suggestParts = this.suggest.split('{searchTerms}');
-  this.queryParts = this.query.split('{searchTerms}');
+  this.suggestParts = this.suggestUrl.split('{searchTerms}');
+  this.queryParts = this.queryUrl.split('{searchTerms}');
 
   // Create API methods
   this.suggest = makeApi(protocols[this.suggestObj.protocol], this.suggestParts);

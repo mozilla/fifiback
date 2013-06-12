@@ -1,4 +1,4 @@
-module.exports = (new require('../Engine'))({
+module.exports = new (require('../Engine'))({
   "id": "twitter.com",
   "name": "Twitter",
   "site": "https://twitter.com/search/",

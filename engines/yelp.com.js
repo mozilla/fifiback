@@ -1,4 +1,4 @@
-module.exports = (new require('../Engine'))({
+module.exports = new (require('../Engine'))({
   "id": "yelp.com",
   "name": "Yelp",
   "site": "http://www.yelp.com/opensearch",

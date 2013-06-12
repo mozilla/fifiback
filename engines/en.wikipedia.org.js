@@ -1,4 +1,4 @@
-module.exports = (new require('../Engine'))({
+module.exports = new (require('../Engine'))({
   "id": "en.wikipedia.org",
   "name": "Wikipedia (en)",
   "site": "http://en.wikipedia.org/w/opensearch_desc.php",
