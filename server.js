@@ -1,4 +1,4 @@
-var engines = require('engines'),
+var engines = require('./engines'),
     express = require('express'),
     socketIo = require('socket.io'),
     app = express();

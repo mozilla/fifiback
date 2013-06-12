@@ -1,3 +1,4 @@
+/*jshint node: true */
 var config,
     impls = {},
     path = require('path'),
@@ -27,8 +28,9 @@ var engines = {
   loadConfig: function () {
     var filePath = path.join(__dirname, 'config.json'),
         jsExtRegExp = /\.js$/;
+console.log('CONFIG FILE IS: ' + filePath);
 
-    this.config = config = JSON.parse(file.readFileSync(filePath, 'utf8'));
+    this.config = config = JSON.parse(fs.readFileSync(filePath, 'utf8'));
 
     fs.readdirSync(path.join(__dirname, 'engines'), function (fileName) {
       var id = fileName .replace(jsExtRegExp, '');
@@ -36,7 +38,7 @@ var engines = {
     });
   }
 
-}
+};
 
 engines.loadConfig();
 module.exports = engines;
