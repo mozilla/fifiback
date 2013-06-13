@@ -7,10 +7,44 @@ var cache = require('./cache'),
       'https:': require('https')
     };
 
+function request(protocol, url) {
+  var req,
+      result = '',
+      d = q.defer();
+
+  req = protocol.request(url, function(res) {
+    res.setEncoding('utf8');
+    res.on("data", function(chunk) {
+      result += chunk;
+    });
+    res.on("end", function() {
+      if (res.statusCode === 301 ||
+          res.statusCode === 302) {
+        //Redirect, try the new location
+  console.log('REDIRECTING TO: ' + res.headers.location);
+        request(protocol, res.headers.location).then(d.resolve, d.reject);
+      } else {
+        try {
+          result = JSON.parse(result);
+        } catch (e) {
+          console.error('RESPONSE NOT JSON: ' + result);
+        }
+        d.resolve(result);
+      }
+    });
+  }).on('error', function(e) {
+    d.reject(e);
+  });
+
+  req.setHeader('User-Agent', 'Fifi/0.1');
+  req.end();
+
+  return d.promise;
+}
+
 function makeApi(apiName, protocol, urlParts) {
   return function (term) {
-    var result = '',
-        engineId = this.id,
+    var engineId = this.id,
         cacheKey = 'fifi-' + engineId + '-' + apiName + '-' + term,
         cacheProxy = this[apiName + 'Cache'],
         url = urlParts[0] +
@@ -28,29 +62,14 @@ function makeApi(apiName, protocol, urlParts) {
       console.log('CALLING SERVICE: ' + apiName + ': ' + engineId + ':' + term);
       console.log(url);
 
-      var d = q.defer();
-      protocol.get(url, function(res) {
-        res.setEncoding('utf8');
-        res.on("data", function(chunk) {
-          result += chunk;
-        });
-        res.on("end", function() {
-          try {
-            result = JSON.parse(result);
-          } catch (e) {
-            console.error('RESPONSE NOT JSON: ' + result);
-          }
-          d.resolve(result);
-          cacheProxy.set(cacheKey, result);
-        });
-      }).on('error', function(e) {
-        d.reject(e);
+      return request(protocol, url).then(function (result) {
+        cacheProxy.set(cacheKey, result);
+        return result;
       });
-
-      return d.promise;
     });
   };
 }
+
 
 function Engine(opts) {
   // First just transfer all options to this instance.
