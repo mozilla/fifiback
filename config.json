@@ -1,7 +1,13 @@
 {
+  "suggestDefault": "google.com",
+
   "suggestSet": [
     "google.com",
     "amazon.com",
+    "en.wikipedia.org"
+  ],
+
+  "querySet": [
     "en.wikipedia.org"
   ]
 }

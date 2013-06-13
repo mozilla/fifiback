@@ -1,5 +1,5 @@
 /*jshint node: true */
-var config,
+var config, suggestImpl,
     impls = {},
     path = require('path'),
     fs = require('fs'),
@@ -25,6 +25,14 @@ var engines = {
   suggest: makeApi('suggest'),
   query: makeApi('query'),
 
+  get: function (engineId) {
+    return impls[id];
+  },
+
+  getDefaultSuggest: function () {
+    return suggestImpl;
+  },
+
   loadConfig: function () {
     var fileNames,
         filePath = path.join(__dirname, 'config.json'),
@@ -36,6 +44,12 @@ var engines = {
       var id = fileName.replace(jsExtRegExp, '');
       impls[id] = require('./engines/' + id);
     });
+
+    suggestImpl = impls[config.suggestDefault];
+
+    if (!suggestImpl) {
+      throw new Error('No suggest implementation for ' + config.suggestDefault);
+    }
   }
 
 };

@@ -9,8 +9,6 @@ app.use(express.logger());
 app.get('/', function(request, response) {
   response.send('Hello World!');
 });
-
-
 app.get('/api/:query?', function(request, response) {
   var query = response.params.query;
 
@@ -32,21 +30,40 @@ io.configure(function () {
 });
 
 io.sockets.on('connection', function (socket) {
-  socket.on('api/suggest', function (data) {
-      var set = data.set || engines.config.suggestSet,
-          term = (data.term && data.term.trim()) || '';
+  // FIND API. The main API
+  socket.on('api/find', function (data) {
+    var term = (data.term && data.term.trim()) || '',
+        querySet = data.querySet || engines.config.querySet,
+        defaultSuggest = engines.getDefaultSuggest();
 
-      set.forEach(function (engineId) {
-        // Fast path for no term
-        if (!term) {
-          return socket.emit('api/suggested', {
-            engineId: engineId,
-            term: term
-          });
-        }
+    if (!term) {
+      return socket.emit('api/suggestDone', {
+        term: term
+      });
+    }
 
-        engines.suggest(term, engineId).then(function (result) {
-          socket.emit('api/suggested', {
+    function onError(err) {
+      //Just eat errors for now.
+      console.error('ERROR: ' + err);
+      socket.emit('api/suggestDone', {
+        term: term
+      });
+    }
+
+    defaultSuggest.suggest(term).then(function (results) {
+      // Send the list of suggestions
+      socket.emit('api/suggestDone', {
+        engineId: defaultSuggest.id,
+        term: term,
+        result: results
+      });
+
+      var suggestion = results[1][0];
+
+      // Now start querying with the default query set.
+      querySet.forEach(function (engineId) {
+        engines.query(suggestion, engineId).then(function (result) {
+          socket.emit('api/queryDone', {
             engineId: engineId,
             term: term,
             result: result
@@ -54,24 +71,58 @@ io.sockets.on('connection', function (socket) {
         }, function (err) {
           //Just eat errors for now.
           console.error('ERROR: ' + err);
-          socket.emit('api/suggested', {
+          socket.emit('api/queryDone', {
+            engineId: engineId,
+            term: term
+          });
+        });
+      });
+    }, onError);
+  });
+
+  // SUGGEST API
+  socket.on('api/suggest', function (data) {
+      var set = data.set || engines.config.suggestSet,
+          term = (data.term && data.term.trim()) || '';
+
+      set.forEach(function (engineId) {
+        // Fast path for no term
+        if (!term) {
+          return socket.emit('api/suggestDone', {
+            engineId: engineId,
+            term: term
+          });
+        }
+
+        engines.suggest(term, engineId).then(function (result) {
+          socket.emit('api/suggestDone', {
+            engineId: engineId,
+            term: term,
+            result: result
+          });
+        }, function (err) {
+          //Just eat errors for now.
+          console.error('ERROR: ' + err);
+          socket.emit('api/suggestDone', {
             engineId: engineId,
             term: term
           });
         });
       });
   });
+
+  // QUERY API
   socket.on('api/query', function(data) {
     var term = (data.term && data.term.trim()) || '';
     if (!term) {
-      return socket.emit('api/suggested', {
+      return socket.emit('api/queryDone', {
         engineId: data.engineId,
         term: term
       });
     }
 
     engines.query(term, data.engineId).then(function (result) {
-      socket.emit('api/queried', {
+      socket.emit('api/queryDone', {
         engineId: data.engineId,
         term: term,
         result: result
@@ -79,7 +130,7 @@ io.sockets.on('connection', function (socket) {
     }, function (err) {
       //Just eat errors for now.
       console.error('ERROR: ' + err);
-      socket.emit('api/queried', {
+      socket.emit('api/queryDone', {
         engineId: data.engineId,
         term: term
       });

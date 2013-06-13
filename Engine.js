@@ -21,11 +21,12 @@ function makeApi(apiName, protocol, urlParts) {
     return cacheProxy.get(cacheKey).then(function (value) {
       // If a valid value, just return it.
       if (value) {
-        console.log('USING CACHE: ' + engineId + ':' + term);
+        console.log('USING CACHE: ' + apiName + ': ' + engineId + ':' + term);
         return value;
       }
 
-      console.log('CALLING SERVICE: ' + engineId + ':' + term);
+      console.log('CALLING SERVICE: ' + apiName + ': ' + engineId + ':' + term);
+      console.log(url);
 
       var d = q.defer();
       protocol.get(url, function(res) {
@@ -34,6 +35,11 @@ function makeApi(apiName, protocol, urlParts) {
           result += chunk;
         });
         res.on("end", function() {
+          try {
+            result = JSON.parse(result);
+          } catch (e) {
+            console.error('RESPONSE NOT JSON: ' + result);
+          }
           d.resolve(result);
           cacheProxy.set(cacheKey, result);
         });
