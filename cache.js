@@ -1,7 +1,7 @@
 /*jshint node: true */
 var rtg, redis,
     q = require('q'),
-    cacheVersion = '3';
+    cacheVersion = '4';
 
 if (process.env.REDISTOGO_URL) {
   rtg   = require("url").parse(process.env.REDISTOGO_URL);

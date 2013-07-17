@@ -42,14 +42,21 @@ function request(protocol, url) {
   return d.promise;
 }
 
-function makeApi(apiName, protocol, urlParts) {
+function makeStandardRequest(protocol, urlParts) {
+  return function req(term) {
+    var url = urlParts[0] +
+              encodeURIComponent(term) +
+              urlParts[1];
+
+    return request(protocol, url);
+  };
+}
+
+function makeApi(apiName, req) {
   return function (term) {
     var engineId = this.id,
         cacheKey = 'fifi-' + engineId + '-' + apiName + '-' + term,
-        cacheProxy = this[apiName + 'Cache'],
-        url = urlParts[0] +
-              encodeURIComponent(term) +
-              urlParts[1];
+        cacheProxy = this[apiName + 'Cache'];
 
     // First check in local cache
     return cacheProxy.get(cacheKey).then(function (value) {
@@ -60,9 +67,8 @@ function makeApi(apiName, protocol, urlParts) {
       }
 
       console.log('CALLING SERVICE: ' + apiName + ': ' + engineId + ':' + term);
-      console.log(url);
 
-      return request(protocol, url).then(function (result) {
+      return req(term).then(function (result) {
         cacheProxy.set(cacheKey, result);
         return result;
       });
@@ -78,21 +84,24 @@ function Engine(opts) {
   }.bind(this));
 
   // Convert URL arg strings to smarter objects
-  this.suggestObj = url.parse(this.suggestUrl);
-  this.queryObj = url.parse(this.queryUrl);
 
-  // Then convert the query strings to allow for easy array join with search
-  // terms.
-  this.suggestParts = this.suggestUrl.split('{searchTerms}');
-  this.queryParts = this.queryUrl.split('{searchTerms}');
+  if (this.suggestUrl) {
+    this.suggestObj = url.parse(this.suggestUrl);
+    this.suggestParts = this.suggestUrl.split('{searchTerms}');
+    this.suggestFunc = makeStandardRequest(protocols[this.suggestObj.protocol],
+                                           this.suggestParts);
+  }
+
+  if (this.queryUrl) {
+    this.queryObj = url.parse(this.queryUrl);
+    this.queryParts = this.queryUrl.split('{searchTerms}');
+    this.queryFunc = makeStandardRequest(protocols[this.queryObj.protocol],
+                                           this.queryParts);
+  }
 
   // Create API methods
-  this.suggest = makeApi('suggest',
-                         protocols[this.suggestObj.protocol],
-                         this.suggestParts);
-  this.query = makeApi('query',
-                       protocols[this.queryObj.protocol],
-                       this.queryParts);
+  this.suggest = makeApi('suggest', this.suggestFunc);
+  this.query = makeApi('query', this.queryFunc);
 
   // Create cache proxies
   this.suggestCache = cache(this.suggestCacheMs);
