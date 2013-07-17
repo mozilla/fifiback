@@ -17,4 +17,10 @@ to redis on default ports.
 
 ## Heroku deployment
 
+Set up for a nodejs heroku deployment:
 
+https://devcenter.heroku.com/articles/nodejs
+
+Then after it is created:
+
+    git push heroku master
