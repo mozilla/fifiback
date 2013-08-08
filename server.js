@@ -4,7 +4,7 @@ var express = require('express');
 var socketIo = require('socket.io');
 var app = express();
 
-var SEARCH_LIMIT = 3;
+var SEARCH_LIMIT = 9;
 
 app.use(express.logger());
 
