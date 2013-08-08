@@ -36,12 +36,14 @@ io.sockets.on('connection', function (socket) {
   // FIND API. The main API
   socket.on('api/find', function (data) {
     var term = (data.term && data.term.trim()) || '';
+    var location = (data.location && data.location.trim()) || '';
     var querySet = data.querySet || engines.config.querySet;
     var defaultSuggest = engines.getDefaultSuggest();
 
     if (!term) {
       return socket.emit('api/suggestDone', {
-        term: term
+        term: term,
+        location: location
       });
     }
 
@@ -49,17 +51,19 @@ io.sockets.on('connection', function (socket) {
       //Just eat errors for now.
       console.error('ERROR: ' + err);
       socket.emit('api/suggestDone', {
-        term: term
+        term: term,
+        location: location
       });
     }
 
-    defaultSuggest.suggest(term).then(function (results) {
+    defaultSuggest.suggest(term, location).then(function (results) {
       // Send the list of suggestions
       results[1] = results[1].slice(0, SEARCH_LIMIT);
       console.log(results[1])
       socket.emit('api/suggestDone', {
         engineId: defaultSuggest.id,
         term: term,
+        location: location,
         result: results
       });
 
@@ -67,7 +71,7 @@ io.sockets.on('connection', function (socket) {
 
       // Now start querying with the default query set.
       querySet.forEach(function (engineId) {
-        engines.suggest(suggestion, engineId).then(function (result) {
+        engines.suggest(suggestion, location, engineId).then(function (result) {
 
           result[1] = result[1].slice(0, SEARCH_LIMIT);
           console.log(result[1])
@@ -81,7 +85,8 @@ io.sockets.on('connection', function (socket) {
           console.error('ERROR: ' + err);
           socket.emit('api/suggestDone', {
             engineId: engineId,
-            term: term
+            term: term,
+            location: location
           });
         });
       });
@@ -91,21 +96,24 @@ io.sockets.on('connection', function (socket) {
   // SUGGEST API
   socket.on('api/suggest', function (data) {
       var set = data.set || engines.config.suggestSet,
-          term = (data.term && data.term.trim()) || '';
+          term = (data.term && data.term.trim()) || '',
+          location = (data.location && data.location.trim()) || '';
 
       set.forEach(function (engineId) {
         // Fast path for no term
         if (!term) {
           return socket.emit('api/suggestDone', {
             engineId: engineId,
-            term: term
+            term: term,
+            location: location
           });
         }
 
-        engines.suggest(term, engineId).then(function (result) {
+        engines.suggest(term, location, engineId).then(function (result) {
           socket.emit('api/suggestDone', {
             engineId: engineId,
             term: term,
+            location: location,
             result: result
           });
         }, function (err) {
@@ -113,7 +121,8 @@ io.sockets.on('connection', function (socket) {
           console.error('ERROR: ' + err);
           socket.emit('api/suggestDone', {
             engineId: engineId,
-            term: term
+            term: term,
+            location: location
           });
         });
       });
@@ -122,17 +131,20 @@ io.sockets.on('connection', function (socket) {
   // QUERY API
   socket.on('api/query', function(data) {
     var term = (data.term && data.term.trim()) || '';
+    var location = (data.location && data.location.trim()) || '';
     if (!term) {
       return socket.emit('api/queryDone', {
         engineId: data.engineId,
-        term: term
+        term: term,
+        location: location
       });
     }
 
-    engines.query(term, data.engineId).then(function (result) {
+    engines.query(term, location, data.engineId).then(function (result) {
       socket.emit('api/queryDone', {
         engineId: data.engineId,
         term: term,
+        location: location,
         result: result
       });
     }, function (err) {
@@ -140,7 +152,8 @@ io.sockets.on('connection', function (socket) {
       console.error('ERROR: ' + err);
       socket.emit('api/queryDone', {
         engineId: data.engineId,
-        term: term
+        term: term,
+        location: location
       });
     });
   });

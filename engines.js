@@ -6,7 +6,7 @@ var config, suggestImpl,
     q = require('q');
 
 function makeApi(apiName) {
-  return function (term, engineId) {
+  return function (term, location, engineId) {
     var d,
         impl = impls[engineId];
 
@@ -16,7 +16,7 @@ function makeApi(apiName) {
       d.resolve([]);
       return d.promise;
     } else {
-      return impl[apiName](term);
+      return impl[apiName](term, location);
     }
   };
 }

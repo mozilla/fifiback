@@ -42,18 +42,17 @@ function request(protocol, url) {
   return d.promise;
 }
 
-function makeStandardRequest(protocol, urlParts) {
-  return function req(term) {
-    var url = urlParts[0] +
-              encodeURIComponent(term) +
-              urlParts[1];
+function makeStandardRequest(protocol, urlRaw) {
+  return function req(term, location) {
+    var url = urlRaw.replace('{searchTerms}', encodeURIComponent(term));
+        url = url.replace('{geo:name}', encodeURIComponent(location));
 
     return request(protocol, url);
   };
 }
 
 function makeApi(apiName, req) {
-  return function (term) {
+  return function (term, location) {
     var engineId = this.id;
     var cacheKey = 'fifi-' + engineId + '-' + apiName + '-' + term;
     var cacheProxy = this[apiName + 'Cache'];
@@ -68,7 +67,7 @@ function makeApi(apiName, req) {
 
       console.log('CALLING SERVICE: ' + apiName + ': ' + engineId + ':' + term);
 
-      return req(term).then(function (result) {
+      return req(term, location).then(function (result) {
         cacheProxy.set(cacheKey, result);
         return result;
       });
@@ -87,16 +86,14 @@ function Engine(opts) {
 
   if (this.suggestUrl) {
     this.suggestObj = url.parse(this.suggestUrl);
-    this.suggestParts = this.suggestUrl.split('{searchTerms}');
     this.suggestFunc = makeStandardRequest(protocols[this.suggestObj.protocol],
-                                           this.suggestParts);
+                                           this.suggestUrl);
   }
 
   if (this.queryUrl) {
     this.queryObj = url.parse(this.queryUrl);
-    this.queryParts = this.queryUrl.split('{searchTerms}');
     this.queryFunc = makeStandardRequest(protocols[this.queryObj.protocol],
-                                           this.queryParts);
+                                         this.queryUrl);
   }
 
   // Create API methods
