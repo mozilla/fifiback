@@ -27,16 +27,17 @@ var io = socketIo.listen(app.listen(port, function() {
 
 // Heroku does not support web sockets, just long polling
 io.configure(function () {
-  io.set("transports", ["websocket"]);
+  io.set('transports', ['websocket']);
+  io.set('log level', 1);
   //io.set("polling duration", 10);
 });
 
 io.sockets.on('connection', function (socket) {
   // FIND API. The main API
   socket.on('api/find', function (data) {
-    var term = (data.term && data.term.trim()) || '',
-        querySet = data.querySet || engines.config.querySet,
-        defaultSuggest = engines.getDefaultSuggest();
+    var term = (data.term && data.term.trim()) || '';
+    var querySet = data.querySet || engines.config.querySet;
+    var defaultSuggest = engines.getDefaultSuggest();
 
     if (!term) {
       return socket.emit('api/suggestDone', {
@@ -55,7 +56,7 @@ io.sockets.on('connection', function (socket) {
     defaultSuggest.suggest(term).then(function (results) {
       // Send the list of suggestions
       results[1] = results[1].slice(0, SEARCH_LIMIT);
-
+      console.log(results[1])
       socket.emit('api/suggestDone', {
         engineId: defaultSuggest.id,
         term: term,
@@ -66,8 +67,11 @@ io.sockets.on('connection', function (socket) {
 
       // Now start querying with the default query set.
       querySet.forEach(function (engineId) {
-        engines.query(suggestion, engineId).then(function (result) {
-          socket.emit('api/queryDone', {
+        engines.suggest(suggestion, engineId).then(function (result) {
+
+          result[1] = result[1].slice(0, SEARCH_LIMIT);
+          console.log(result[1])
+          socket.emit('api/suggestDone', {
             engineId: engineId,
             term: term,
             result: result
@@ -75,7 +79,7 @@ io.sockets.on('connection', function (socket) {
         }, function (err) {
           //Just eat errors for now.
           console.error('ERROR: ' + err);
-          socket.emit('api/queryDone', {
+          socket.emit('api/suggestDone', {
             engineId: engineId,
             term: term
           });

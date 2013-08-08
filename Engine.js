@@ -1,27 +1,27 @@
-/*jshint node: true */
-var cache = require('./cache'),
-    q = require('q'),
-    url = require('url'),
-    protocols = {
-      'http:': require('http'),
-      'https:': require('https')
-    };
+'use strict';
+
+var cache = require('./cache');
+var q = require('q');
+var url = require('url');
+var protocols = {
+  'http:': require('http'),
+  'https:': require('https')
+};
 
 function request(protocol, url) {
-  var req,
-      result = '',
-      d = q.defer();
+  var req;
+  var result = '';
+  var d = q.defer();
 
-  req = protocol.request(url, function(res) {
+  req = protocol.request(url, function (res) {
     res.setEncoding('utf8');
-    res.on("data", function(chunk) {
+    res.on('data', function (chunk) {
       result += chunk;
     });
-    res.on("end", function() {
-      if (res.statusCode === 301 ||
-          res.statusCode === 302) {
+    res.on('end', function () {
+      if (res.statusCode === 301 || res.statusCode === 302) {
         //Redirect, try the new location
-  console.log('REDIRECTING TO: ' + res.headers.location);
+        console.log('REDIRECTING TO: ' + res.headers.location);
         request(protocol, res.headers.location).then(d.resolve, d.reject);
       } else {
         try {
@@ -32,7 +32,7 @@ function request(protocol, url) {
         d.resolve(result);
       }
     });
-  }).on('error', function(e) {
+  }).on('error', function (e) {
     d.reject(e);
   });
 
@@ -54,9 +54,9 @@ function makeStandardRequest(protocol, urlParts) {
 
 function makeApi(apiName, req) {
   return function (term) {
-    var engineId = this.id,
-        cacheKey = 'fifi-' + engineId + '-' + apiName + '-' + term,
-        cacheProxy = this[apiName + 'Cache'];
+    var engineId = this.id;
+    var cacheKey = 'fifi-' + engineId + '-' + apiName + '-' + term;
+    var cacheProxy = this[apiName + 'Cache'];
 
     // First check in local cache
     return cacheProxy.get(cacheKey).then(function (value) {

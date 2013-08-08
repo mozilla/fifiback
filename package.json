@@ -7,7 +7,8 @@
     "socket.io": "~0.9.16",
     "redis": "~0.8.3",
     "redis-url": "~0.1.0",
-    "wikipedia-js": "~0.0.6"
+    "wikipedia-js": "~0.0.6",
+    "xml2js": "*"
   },
   "engines": {
     "node": "0.10.x",
