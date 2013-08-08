@@ -1,8 +1,10 @@
 /*jshint node: true */
-var engines = require('./engines'),
-    express = require('express'),
-    socketIo = require('socket.io'),
-    app = express();
+var engines = require('./engines');
+var express = require('express');
+var socketIo = require('socket.io');
+var app = express();
+
+var SEARCH_LIMIT = 3;
 
 app.use(express.logger());
 
@@ -25,8 +27,8 @@ var io = socketIo.listen(app.listen(port, function() {
 
 // Heroku does not support web sockets, just long polling
 io.configure(function () {
-  io.set("transports", ["xhr-polling"]);
-  io.set("polling duration", 10);
+  io.set("transports", ["websocket"]);
+  //io.set("polling duration", 10);
 });
 
 io.sockets.on('connection', function (socket) {
@@ -52,6 +54,8 @@ io.sockets.on('connection', function (socket) {
 
     defaultSuggest.suggest(term).then(function (results) {
       // Send the list of suggestions
+      results[1] = results[1].slice(0, SEARCH_LIMIT);
+
       socket.emit('api/suggestDone', {
         engineId: defaultSuggest.id,
         term: term,
