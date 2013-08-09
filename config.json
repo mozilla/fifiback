@@ -3,14 +3,14 @@
 
   "suggestSet": [
     "google.com",
-    "amazon.com",
     "yelp.com",
+    "amazon.com",
     "en.wikipedia.org"
   ],
 
   "querySet": [
-    "en.wikipedia.org",
+    "yelp.com",
     "amazon.com",
-    "yelp.com"
+    "en.wikipedia.org"
   ]
 }
