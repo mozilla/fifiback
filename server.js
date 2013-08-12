@@ -4,7 +4,7 @@ var express = require('express');
 var socketIo = require('socket.io');
 var app = express();
 
-var SEARCH_LIMIT = 9;
+var SEARCH_LIMIT = 3;
 
 app.use(express.logger());
 
@@ -37,8 +37,10 @@ io.sockets.on('connection', function (socket) {
   socket.on('api/find', function (data) {
     var term = (data.term && data.term.trim()) || '';
     var location = (data.location && data.location.trim()) || '';
+    var suggestSet = data.suggestSet || engines.config.suggestSet;
     var querySet = data.querySet || engines.config.querySet;
     var defaultSuggest = engines.getDefaultSuggest();
+    var suggestion;
 
     if (!term) {
       return socket.emit('api/suggestDone', {
@@ -56,38 +58,53 @@ io.sockets.on('connection', function (socket) {
       });
     }
 
-    defaultSuggest.suggest(term, location).then(function (results) {
-      // Send the list of suggestions
-      results[1] = results[1].slice(0, SEARCH_LIMIT);
-      console.log(results[1])
-      socket.emit('api/suggestDone', {
-        engineId: defaultSuggest.id,
-        term: term,
-        location: location,
-        result: results
-      });
+    /*
+      iterate through all suggestion engines for the term sent
+      NOTE: the default suggestion engine `defaultSuggest` should be the first element in the `suggestSet` array
+      once the default engine returns suggestions we fire off a similar set of queries to the `suggestSet` engines
+      minus the default engine using the first suggest term returned from the default engine
+    */
+    suggestSet.forEach(function (engineId) {
+      engines.suggest(term, location, engineId).then(function (result) {
+        console.log(term, engineId, result[1]);
+        socket.emit('api/suggestDone', {
+          engineId: engineId,
+          term: term,
+          location: location,
+          result: [result[1].slice(0, SEARCH_LIMIT)]
+        });
 
-      var suggestion = results[1][0];
-
-      // Now start querying with the default query set.
-      querySet.forEach(function (engineId) {
-        engines.suggest(suggestion, location, engineId).then(function (result) {
-
-          result[1] = result[1].slice(0, SEARCH_LIMIT);
-          console.log(result[1])
-          socket.emit('api/suggestDone', {
-            engineId: engineId,
-            term: term,
-            result: result
+        if (engineId === defaultSuggest.id) {
+          suggestion = result[1][0];
+          // drop our first engine
+          suggestSet.slice(1).forEach(function (id) {
+            engines.suggest(suggestion, location, id).then(function (r) {
+              console.log(term, suggestion, id, r[1]);
+              socket.emit('api/suggestDone', {
+                engineId: id,
+                term: suggestion,
+                location: location,
+                result: [r[1].slice(0, SEARCH_LIMIT)]
+              });
+            }, function (err) {
+              //Just eat errors for now.
+              console.error('ERROR: ' + err);
+              socket.emit('api/suggestDone', {
+                engineId: id,
+                term: suggestion,
+                location: location
+              });
+            });
           });
-        }, function (err) {
-          //Just eat errors for now.
-          console.error('ERROR: ' + err);
-          socket.emit('api/suggestDone', {
-            engineId: engineId,
-            term: term,
-            location: location
-          });
+        }
+
+      }, function (err) {
+        //Just eat errors for now.
+        console.error('ERROR: ' + err);
+        socket.emit('api/suggestDone', {
+          engineId: engineId,
+          term: term,
+          location: location
         });
       });
     }, onError);
