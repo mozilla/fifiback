@@ -71,7 +71,7 @@ io.sockets.on('connection', function (socket) {
           engineId: engineId,
           term: term,
           location: location,
-          result: [result[1].slice(0, SEARCH_LIMIT)]
+          result: result[1].slice(0, SEARCH_LIMIT)
         });
 
         if (engineId === defaultSuggest.id) {
@@ -84,7 +84,7 @@ io.sockets.on('connection', function (socket) {
                 engineId: id,
                 term: suggestion,
                 location: location,
-                result: [r[1].slice(0, SEARCH_LIMIT)]
+                result: r[1].slice(0, SEARCH_LIMIT)
               });
             }, function (err) {
               //Just eat errors for now.
