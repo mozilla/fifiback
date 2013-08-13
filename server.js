@@ -66,7 +66,7 @@ io.sockets.on('connection', function (socket) {
     */
     suggestSet.forEach(function (engineId) {
       engines.suggest(term, location, engineId).then(function (result) {
-        console.log(term, engineId, result[1]);
+        console.log(term, location, engineId, result[1]);
         socket.emit('api/suggestDone', {
           engineId: engineId,
           term: term,

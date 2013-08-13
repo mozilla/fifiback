@@ -16,7 +16,11 @@ function makeApi(apiName) {
       d.resolve([]);
       return d.promise;
     } else {
-      return impl[apiName](term, location);
+      if (impl[apiName + 'Translate']) {
+        return impl[apiName + 'Translate'](term, impl[apiName](term, location));
+      } else {
+        return impl[apiName](term, location);
+      }
     }
   };
 }
