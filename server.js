@@ -17,9 +17,7 @@ app.get('/api/:query?', function(request, response) {
   response.send('Hello: ' + query);
 });
 
-
 var port = process.env.PORT || 5000;
-
 
 var io = socketIo.listen(app.listen(port, function() {
   console.log("Listening on " + port);
@@ -27,9 +25,9 @@ var io = socketIo.listen(app.listen(port, function() {
 
 // Heroku does not support web sockets, just long polling
 io.configure(function () {
-  io.set('transports', ['websocket']);
+  io.set('transports', ['websocket', 'polling']);
   io.set('log level', 1);
-  //io.set("polling duration", 10);
+  io.set("polling duration", 10);
 });
 
 io.sockets.on('connection', function (socket) {
@@ -146,9 +144,10 @@ io.sockets.on('connection', function (socket) {
   });
 
   // QUERY API
-  socket.on('api/query', function(data) {
+  socket.on('api/query', function (data) {
     var term = (data.term && data.term.trim()) || '';
     var location = (data.location && data.location.trim()) || '';
+
     if (!term) {
       return socket.emit('api/queryDone', {
         engineId: data.engineId,
