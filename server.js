@@ -2,6 +2,7 @@
 var engines = require('./engines');
 var express = require('express');
 var socketIo = require('socket.io');
+var transports = ("PORT" in process.env)? ['xhr-polling'] : ['websocket', 'xhr-polling'];
 var app = express();
 
 var SEARCH_LIMIT = 12;
@@ -25,7 +26,7 @@ var io = socketIo.listen(app.listen(port, function() {
 
 // Heroku does not support web sockets, just long polling
 io.configure(function () {
-  io.set('transports', ['websocket', 'polling']);
+  io.set('transports', transports);
   io.set('log level', 1);
   io.set("polling duration", 10);
 });
