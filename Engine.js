@@ -7,6 +7,13 @@ var url = require('url');
 var nconf = require('nconf');
 nconf.argv().env().file({ file: 'local.json' });
 
+var OperationHelper = require('apac').OperationHelper;
+var opHelper = new OperationHelper({
+  awsId: nconf.get('amazonKey'),
+  awsSecret: nconf.get('amazonSecret'),
+  assocId: nconf.get('amazonAssociateId')
+});
+
 var protocols = {
   'http:': require('http'),
   'https:': require('https')
@@ -47,6 +54,24 @@ function request(protocol, url) {
   return d.promise;
 }
 
+function amazonApi(term) {
+  var d = q.defer();
+
+  opHelper.execute('ItemSearch', {
+    'SearchIndex': 'Blended',
+    'Keywords': term,
+    'ResponseGroup': 'ItemAttributes'
+  }, function (err, results) {
+    if (err) {
+      d.reject(err);
+    } else {
+      d.resolve(results);
+    }
+  });
+
+  return d.promise;
+};
+
 function makeStandardRequest(protocol, urlRaw) {
   return function req(term, location, engineId) {
     var url = urlRaw.replace('{searchTerms}', encodeURIComponent(term));
@@ -56,19 +81,21 @@ function makeStandardRequest(protocol, urlRaw) {
       case 'google.com':
         url = url.replace('{apiKey}', encodeURIComponent(nconf.get('googleAPI')));
         url = url.replace('{cx}', encodeURIComponent(nconf.get('googleCX')));
+        return request(protocol, url);
         break;
 
       case 'amazon.com':
+        return amazonApi(term);
         break;
 
       case 'yelp.com':
+        return request(protocol, url);
         break;
 
       case 'en.wikipedia.org':
+        return request(protocol, url);
         break;
     };
-
-    return request(protocol, url);
   };
 }
 

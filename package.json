@@ -9,7 +9,8 @@
     "redis-url": "~0.1.0",
     "wikipedia-js": "~0.0.6",
     "nconf": ">= 0.6.7",
-    "request": ">= 2.26.0"
+    "request": ">= 2.26.0",
+    "apac": "git://github.com/ednapiranha/node-apac.git"
   },
   "engines": {
     "node": "0.10.x",

@@ -8,7 +8,9 @@
     "googleAPI": "<simple api key>",
     "googleCX": "<cx id>",
     "httpReferer": "<referer>",
-    "amazonAPI": "",
+    "amazonKey": "<key>",
+    "amazonSecret": "<secret>",
+    "amazonAssociateId": "<id>",
     "yelpAPI": "",
     "wikipediaAPI": ""
 }
