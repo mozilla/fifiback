@@ -3,6 +3,10 @@
 var cache = require('./cache');
 var q = require('q');
 var url = require('url');
+
+var nconf = require('nconf');
+nconf.argv().env().file({ file: 'local.json' });
+
 var protocols = {
   'http:': require('http'),
   'https:': require('https')
@@ -37,15 +41,32 @@ function request(protocol, url) {
   });
 
   req.setHeader('User-Agent', 'Fifi/0.1');
+  req.setHeader('Referer', nconf.get('httpReferer'));
   req.end();
 
   return d.promise;
 }
 
 function makeStandardRequest(protocol, urlRaw) {
-  return function req(term, location) {
+  return function req(term, location, engineId) {
     var url = urlRaw.replace('{searchTerms}', encodeURIComponent(term));
         url = url.replace('{geo:name}', encodeURIComponent(location));
+
+    switch (engineId) {
+      case 'google.com':
+        url = url.replace('{apiKey}', encodeURIComponent(nconf.get('googleAPI')));
+        url = url.replace('{cx}', encodeURIComponent(nconf.get('googleCX')));
+        break;
+
+      case 'amazon.com':
+        break;
+
+      case 'yelp.com':
+        break;
+
+      case 'en.wikipedia.org':
+        break;
+    };
 
     return request(protocol, url);
   };
@@ -67,7 +88,7 @@ function makeApi(apiName, req) {
 
       console.log('CALLING SERVICE: ' + apiName + ': ' + engineId + ':' + term + ':' + location);
 
-      return req(term, location).then(function (result) {
+      return req(term, location, engineId).then(function (result) {
         cacheProxy.set(cacheKey, result);
         return result;
       });
@@ -83,7 +104,6 @@ function Engine(opts) {
   }.bind(this));
 
   // Convert URL arg strings to smarter objects
-
   if (this.suggestUrl) {
     this.suggestObj = url.parse(this.suggestUrl);
     this.suggestFunc = makeStandardRequest(protocols[this.suggestObj.protocol],
@@ -93,7 +113,8 @@ function Engine(opts) {
   if (this.queryUrl) {
     this.queryObj = url.parse(this.queryUrl);
     this.queryFunc = makeStandardRequest(protocols[this.queryObj.protocol],
-                                         this.queryUrl);
+                                         this.queryUrl,
+                                         this.id);
   }
 
   // Create API methods

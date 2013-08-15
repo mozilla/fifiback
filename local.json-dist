@@ -1,0 +1,14 @@
+{
+    "domain": "http://localhost",
+    "port": 3000,
+    "authPort": 3000,
+    "authUrl": "https://login.persona.org",
+    "sessionSecret": "secret",
+    "sessionCookie": "session",
+    "googleAPI": "<simple api key>",
+    "googleCX": "<cx id>",
+    "httpReferer": "<referer>",
+    "amazonAPI": "",
+    "yelpAPI": "",
+    "wikipediaAPI": ""
+}

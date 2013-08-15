@@ -1,8 +1,12 @@
 /*jshint node: true */
 var engines = require('./engines');
 var express = require('express');
+
+var nconf = require('nconf');
+nconf.argv().env().file({ file: 'local.json' });
+
 var socketIo = require('socket.io');
-var transports = ("PORT" in process.env)? ['xhr-polling'] : ['websocket', 'xhr-polling'];
+var transports = ('PORT' in process.env)? ['xhr-polling'] : ['websocket', 'xhr-polling'];
 var app = express();
 
 var SEARCH_LIMIT = 12;
@@ -28,7 +32,7 @@ var io = socketIo.listen(app.listen(port, function() {
 io.configure(function () {
   io.set('transports', transports);
   io.set('log level', 1);
-  io.set("polling duration", 10);
+  io.set('polling duration', 10);
 });
 
 io.sockets.on('connection', function (socket) {
