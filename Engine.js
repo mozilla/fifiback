@@ -114,7 +114,6 @@ function makeStandardRequest(protocol, urlRaw) {
         break;
 
       case 'yelp.com':
-        console.log('************ ', yelpApi(term, location))
         return yelpApi(term, location);
         break;
 

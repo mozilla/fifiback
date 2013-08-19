@@ -7,18 +7,24 @@ module.exports = new (require('../Engine'))({
   "name": "Wikipedia (en)",
   "site": "http://en.wikipedia.org/w/opensearch_desc.php",
   "queryFunc": function (term) {
-    var options = {query: term, format: "html", summaryOnly: true},
-        d = q.defer();
+    var options = {
+      query: term,
+      format: 'html',
+      summaryOnly: true
+    };
+
+    var d = q.defer();
 
     console.log('wikipedia queryFunc: ' + term);
 
-    wikipedia.searchArticle(options, function(err, htmlWikiText){
+    wikipedia.searchArticle(options, function (err, htmlWikiText) {
       if (err) {
         d.reject(err);
       } else {
         d.resolve(htmlWikiText);
       }
     });
+
     return d.promise;
   },
   "suggestUrl": "http://en.wikipedia.org/w/api.php?action=opensearch&search={searchTerms}",
