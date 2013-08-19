@@ -11,6 +11,9 @@
     "amazonKey": "<key>",
     "amazonSecret": "<secret>",
     "amazonAssociateId": "<id>",
-    "yelpAPI": "",
+    "yelpKey": "<key>",
+    "yelpSecret": "<secret>",
+    "yelpToken": "<token>",
+    "yelpTokenSecret": "<token secret>",
     "wikipediaAPI": ""
 }

@@ -10,7 +10,8 @@
     "wikipedia-js": "~0.0.6",
     "nconf": ">= 0.6.7",
     "request": ">= 2.26.0",
-    "apac": "git://github.com/ednapiranha/node-apac.git"
+    "apac": "git://github.com/ednapiranha/node-apac.git",
+    "yelp": ">= 0.1.1"
   },
   "engines": {
     "node": "0.10.x",

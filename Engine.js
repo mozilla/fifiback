@@ -14,6 +14,14 @@ var opHelper = new OperationHelper({
   assocId: nconf.get('amazonAssociateId')
 });
 
+var yelp = require('yelp');
+var yelpHelper = yelp.createClient({
+  consumer_key: nconf.get('yelpKey'),
+  consumer_secret: nconf.get('yelpSecret'),
+  token: nconf.get('yelpToken'),
+  token_secret: nconf.get('yelpTokenSecret')
+});
+
 var protocols = {
   'http:': require('http'),
   'https:': require('https')
@@ -72,6 +80,23 @@ function amazonApi(term) {
   return d.promise;
 };
 
+function yelpApi(term, location) {
+  var d = q.defer();
+
+  yelpHelper.search({
+    term: term,
+    location: location
+  }, function (err, results) {
+    if (err) {
+      d.reject(err);
+    } else {
+      d.resolve(results);
+    }
+  });
+
+  return d.promise;
+};
+
 function makeStandardRequest(protocol, urlRaw) {
   return function req(term, location, engineId) {
     var url = urlRaw.replace('{searchTerms}', encodeURIComponent(term));
@@ -89,7 +114,8 @@ function makeStandardRequest(protocol, urlRaw) {
         break;
 
       case 'yelp.com':
-        return request(protocol, url);
+        console.log('************ ', yelpApi(term, location))
+        return yelpApi(term, location);
         break;
 
       case 'en.wikipedia.org':
