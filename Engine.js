@@ -27,6 +27,18 @@ var protocols = {
   'https:': require('https')
 };
 
+function keySize(obj) {
+  var size = 0;
+  var key;
+
+  for (key in obj) {
+    if (obj.hasOwnProperty(key)) {
+      size ++;
+    }
+  }
+  return size;
+};
+
 function request(protocol, url) {
   var req;
   var result = '';
@@ -64,6 +76,7 @@ function request(protocol, url) {
 
 function amazonApi(term) {
   var d = q.defer();
+  var itemsArr = [];
 
   opHelper.execute('ItemSearch', {
     'SearchIndex': 'Blended',
@@ -73,7 +86,17 @@ function amazonApi(term) {
     if (err) {
       d.reject(err);
     } else {
-      d.resolve(results);
+      var items = results.itemsearchresponse.items[0];
+
+      if (items.item) {
+        for (var i in items.item) {
+          if (items.item[i].detailpageurl) {
+            itemsArr.push(items.item[i]);
+          }
+        }
+      }
+
+      d.resolve(itemsArr);
     }
   });
 
