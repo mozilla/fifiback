@@ -148,6 +148,36 @@ io.sockets.on('connection', function (socket) {
       });
   });
 
+  socket.on('api/suggestImage', function (data) {
+    var term = (data.term && data.term.trim()) || '';
+    var location = (data.location && data.location.trim()) || '';
+
+    if (!term) {
+      return socket.emit('api/suggestImageDone', {
+        term: term,
+        image: ''
+      });
+    }
+
+    engines.query(term, location, 'google.com').then(function (result) {
+      socket.emit('api/suggestImageDone', {
+        engineId: data.engineId,
+        term: term,
+        location: location,
+        result: result
+      });
+    }, function (err) {
+      //Just eat errors for now.
+      console.error('ERROR: ' + err);
+      socket.emit('api/suggestImageDone', {
+        engineId: data.engineId,
+        term: term,
+        location: location,
+        result: ''
+      });
+    });
+  });
+
   // QUERY API
   socket.on('api/query', function (data) {
     var term = (data.term && data.term.trim()) || '';
