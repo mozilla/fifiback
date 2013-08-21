@@ -7,21 +7,6 @@ var url = require('url');
 var nconf = require('nconf');
 nconf.argv().env().file({ file: 'local.json' });
 
-var OperationHelper = require('apac').OperationHelper;
-var opHelper = new OperationHelper({
-  awsId: nconf.get('amazonKey'),
-  awsSecret: nconf.get('amazonSecret'),
-  assocId: nconf.get('amazonAssociateId')
-});
-
-var yelp = require('yelp');
-var yelpHelper = yelp.createClient({
-  consumer_key: nconf.get('yelpKey'),
-  consumer_secret: nconf.get('yelpSecret'),
-  token: nconf.get('yelpToken'),
-  token_secret: nconf.get('yelpTokenSecret')
-});
-
 var protocols = {
   'http:': require('http'),
   'https:': require('https')
@@ -74,76 +59,12 @@ function request(protocol, url) {
   return d.promise;
 }
 
-function amazonApi(term) {
-  var d = q.defer();
-  var itemsArr = [];
-
-  opHelper.execute('ItemSearch', {
-    'SearchIndex': 'Blended',
-    'Keywords': term,
-    'ResponseGroup': 'ItemAttributes'
-  }, function (err, results) {
-    if (err) {
-      d.reject(err);
-    } else {
-      var items = results.itemsearchresponse.items[0];
-
-      if (items.item) {
-        for (var i in items.item) {
-          if (items.item[i].detailpageurl) {
-            itemsArr.push(items.item[i]);
-          }
-        }
-      }
-
-      d.resolve(itemsArr);
-    }
-  });
-
-  return d.promise;
-};
-
-function yelpApi(term, location) {
-  var d = q.defer();
-
-  yelpHelper.search({
-    term: term,
-    location: location
-  }, function (err, results) {
-    if (err) {
-      d.reject(err);
-    } else {
-      d.resolve(results);
-    }
-  });
-
-  return d.promise;
-};
-
 function makeStandardRequest(protocol, urlRaw) {
   return function req(term, location, engineId) {
     var url = urlRaw.replace('{searchTerms}', encodeURIComponent(term));
         url = url.replace('{geo:name}', encodeURIComponent(location));
 
-    switch (engineId) {
-      case 'google.com':
-        url = url.replace('{apiKey}', encodeURIComponent(nconf.get('googleAPI')));
-        url = url.replace('{cx}', encodeURIComponent(nconf.get('googleCX')));
-        return request(protocol, url);
-        break;
-
-      case 'amazon.com':
-        return amazonApi(term);
-        break;
-
-      case 'yelp.com':
-        return yelpApi(term, location);
-        break;
-
-      case 'en.wikipedia.org':
-        return request(protocol, url);
-        break;
-    };
+    return request(protocol, url);
   };
 }
 
@@ -189,7 +110,8 @@ function Engine(opts) {
     this.queryObj = url.parse(this.queryUrl);
     this.queryFunc = makeStandardRequest(protocols[this.queryObj.protocol],
                                          this.queryUrl,
-                                         this.id);
+                                         this.id,
+                                         this.location);
   }
 
   // Create API methods

@@ -9,7 +9,7 @@ var socketIo = require('socket.io');
 var transports = ('PORT' in process.env)? ['xhr-polling'] : ['websocket', 'xhr-polling'];
 var app = express();
 
-var SEARCH_LIMIT = 12;
+var SEARCH_LIMIT = 3;
 
 app.use(express.logger());
 
@@ -43,6 +43,7 @@ io.sockets.on('connection', function (socket) {
     var suggestSet = data.suggestSet || engines.config.suggestSet;
     var querySet = data.querySet || engines.config.querySet;
     var defaultSuggest = engines.getDefaultSuggest();
+    var secondary = data.secondary || false;
     var suggestion;
 
     if (!term) {
@@ -69,24 +70,25 @@ io.sockets.on('connection', function (socket) {
     */
     suggestSet.forEach(function (engineId) {
       engines.suggest(term, location, engineId).then(function (result) {
-        console.log(term, location, engineId, result[1]);
         socket.emit('api/suggestDone', {
           engineId: engineId,
           term: term,
           location: location,
+          secondary: false,
           result: result[1].slice(0, SEARCH_LIMIT)
         });
 
         if (engineId === defaultSuggest.id) {
-          suggestion = result[1][0];
+          suggestion = result[0];
           // drop our first engine
           suggestSet.slice(1).forEach(function (id) {
             engines.suggest(suggestion, location, id).then(function (r) {
-              console.log(term, suggestion, id, r[1]);
+              // console.log(term, suggestion, id, r[1]);
               socket.emit('api/suggestDone', {
                 engineId: id,
                 term: suggestion,
                 location: location,
+                secondary: true,
                 result: r[1].slice(0, SEARCH_LIMIT)
               });
             }, function (err) {
@@ -95,12 +97,48 @@ io.sockets.on('connection', function (socket) {
               socket.emit('api/suggestDone', {
                 engineId: id,
                 term: suggestion,
+                secondary: true,
                 location: location
               });
             });
           });
         }
+      }, function (err) {
+        //Just eat errors for now.
+        console.error('ERROR: ' + err);
+        socket.emit('api/suggestDone', {
+          engineId: engineId,
+          term: term,
+          secondary: false,
+          location: location
+        });
+      });
+    }, onError);
+  });
 
+  // SUGGEST API
+  socket.on('api/suggest', function (data) {
+    var set = data.set || engines.config.suggestSet,
+        term = (data.term && data.term.trim()) || '',
+        location = (data.location && data.location.trim()) || '';
+
+    set.forEach(function (engineId) {
+      // Fast path for no term
+      if (!term) {
+        return socket.emit('api/suggestDone', {
+          engineId: engineId,
+          term: term,
+          location: location
+        });
+      }
+
+      engines.suggest(term, location, engineId).then(function (result) {
+        socket.emit('api/suggestDone', {
+          engineId: engineId,
+          term: term,
+          location: location,
+          result: result
+        });
       }, function (err) {
         //Just eat errors for now.
         console.error('ERROR: ' + err);
@@ -110,42 +148,7 @@ io.sockets.on('connection', function (socket) {
           location: location
         });
       });
-    }, onError);
-  });
-
-  // SUGGEST API
-  socket.on('api/suggest', function (data) {
-      var set = data.set || engines.config.suggestSet,
-          term = (data.term && data.term.trim()) || '',
-          location = (data.location && data.location.trim()) || '';
-
-      set.forEach(function (engineId) {
-        // Fast path for no term
-        if (!term) {
-          return socket.emit('api/suggestDone', {
-            engineId: engineId,
-            term: term,
-            location: location
-          });
-        }
-
-        engines.suggest(term, location, engineId).then(function (result) {
-          socket.emit('api/suggestDone', {
-            engineId: engineId,
-            term: term,
-            location: location,
-            result: result
-          });
-        }, function (err) {
-          //Just eat errors for now.
-          console.error('ERROR: ' + err);
-          socket.emit('api/suggestDone', {
-            engineId: engineId,
-            term: term,
-            location: location
-          });
-        });
-      });
+    });
   });
 
   socket.on('api/suggestImage', function (data) {

@@ -1,6 +1,6 @@
 /*jshint node: true */
-var wikipedia = require('wikipedia-js'),
-    q = require('q');
+var q = require('q');
+var wikipedia = require('wikipedia-js');
 
 module.exports = new (require('../Engine'))({
   "id": "en.wikipedia.org",
