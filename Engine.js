@@ -77,11 +77,12 @@ function makeApi(apiName, req) {
     // First check in local cache
     return cacheProxy.get(cacheKey).then(function (value) {
       // If a valid value, just return it.
+      /*
       if (value) {
         console.log('USING CACHE: ' + apiName + ': ' + engineId + ':' + term + ':' + location);
         return value;
       }
-
+      */
       console.log('CALLING SERVICE: ' + apiName + ': ' + engineId + ':' + term + ':' + location);
 
       return req(term, location, engineId).then(function (result) {
