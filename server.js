@@ -1,3 +1,7 @@
+if ( process.env.NEW_RELIC_HOME ) {
+  require( 'newrelic' );
+}
+
 /*jshint node: true */
 var engines = require('./engines');
 var express = require('express');
