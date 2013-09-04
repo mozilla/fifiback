@@ -42,7 +42,7 @@ io.configure(function () {
 io.sockets.on('connection', function (socket) {
   // FIND API. The main API
   socket.on('api/find', function (data) {
-    var term = (data.term && data.term.trim()) || '';
+    var term = data.term || '';
     var location = (data.location && data.location.trim()) || '';
     var suggestSet = data.suggestSet || engines.config.suggestSet;
     var querySet = data.querySet || engines.config.querySet;
@@ -83,13 +83,15 @@ io.sockets.on('connection', function (socket) {
         });
 
         if (engineId === defaultSuggest.id) {
-          suggestion = result[0];
+          suggestion = result[1][0];
+
           // drop our first engine
           suggestSet.slice(1).forEach(function (id) {
             engines.suggest(suggestion, location, id).then(function (r) {
               // console.log(term, suggestion, id, r[1]);
               socket.emit('api/suggestDone', {
                 engineId: id,
+                originalTerm: term,
                 term: suggestion,
                 location: location,
                 secondary: true,
@@ -123,7 +125,7 @@ io.sockets.on('connection', function (socket) {
   // SUGGEST API
   socket.on('api/suggest', function (data) {
     var set = data.set || engines.config.suggestSet,
-        term = (data.term && data.term.trim()) || '',
+        term = data.term || '',
         location = (data.location && data.location.trim()) || '';
 
     set.forEach(function (engineId) {
@@ -187,7 +189,7 @@ io.sockets.on('connection', function (socket) {
 
   // QUERY API
   socket.on('api/query', function (data) {
-    var term = (data.term && data.term.trim()) || '';
+    var term = data.term || '';
     var location = (data.location && data.location.trim()) || '';
 
     if (!term) {
