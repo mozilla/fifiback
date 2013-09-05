@@ -18,5 +18,7 @@
     "wikipediaAPI": "",
     "redisDev": 0,
     "redisTest": 1,
-    "redisProd": 2
+    "redisProd": 2,
+    "redisPort": 6379,
+    "redisHost": "127.0.0.1"
 }

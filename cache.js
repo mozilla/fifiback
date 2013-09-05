@@ -1,8 +1,11 @@
 /*jshint node: true */
 var q = require('q');
 var cacheVersion = '4';
+var nconf = require('nconf');
 var redis;
 var rtg;
+
+nconf.argv().env().file({ file: 'local.json' });
 
 if (process.env.REDISTOGO_URL) {
   // Remove this once we're fully on AWS
@@ -10,7 +13,7 @@ if (process.env.REDISTOGO_URL) {
   redis = require('redis').createClient(rtg.port, rtg.hostname);
   redis.auth(rtg.auth.split(':')[1]);
 } else {
-  redis = require('redis').createClient();
+  redis = require('redis').createClient(nconf.get('redisPort'), nconf.get('redisHost'));
 }
 
 module.exports = function (cacheLimit) {
