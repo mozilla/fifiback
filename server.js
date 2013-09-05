@@ -44,7 +44,7 @@ app.get('/api/:query?', function (request, response) {
   response.send('Hello: ' + query);
 });
 
-var port = process.env.PORT || 5000;
+var port = process.env.PORT || nconf.get('authPort');
 
 var io = socketIo.listen(app.listen(port, function () {
   console.log("Listening on " + port);
