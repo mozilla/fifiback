@@ -15,5 +15,8 @@
     "yelpSecret": "<secret>",
     "yelpToken": "<token>",
     "yelpTokenSecret": "<token secret>",
-    "wikipediaAPI": ""
+    "wikipediaAPI": "",
+    "redisDev": 0,
+    "redisTest": 1,
+    "redisProd": 2
 }

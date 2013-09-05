@@ -15,12 +15,30 @@ var app = express();
 
 var SEARCH_LIMIT = 3;
 
+app.configure('development, test', function () {
+  app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
+});
+
+app.configure('development', function () {
+  app.set('fifi', nconf.get('redisDev'));
+});
+
+app.configure('test', function () {
+  app.set('fifi', nconf.get('redisTest'));
+});
+
+app.configure('production', function () {
+  app.use(express.errorHandler());
+  app.set('fifi', nconf.get('redisProd'));
+});
+
 app.use(express.logger());
 
-app.get('/', function(request, response) {
+app.get('/', function (request, response) {
   response.send('Hello World!');
 });
-app.get('/api/:query?', function(request, response) {
+
+app.get('/api/:query?', function (request, response) {
   var query = response.params.query;
 
   response.send('Hello: ' + query);
@@ -28,7 +46,7 @@ app.get('/api/:query?', function(request, response) {
 
 var port = process.env.PORT || 5000;
 
-var io = socketIo.listen(app.listen(port, function() {
+var io = socketIo.listen(app.listen(port, function () {
   console.log("Listening on " + port);
 }));
 

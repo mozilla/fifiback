@@ -1,14 +1,16 @@
 /*jshint node: true */
-var rtg, redis,
-    q = require('q'),
-    cacheVersion = '4';
+var q = require('q');
+var cacheVersion = '4';
+var redis;
+var rtg;
 
 if (process.env.REDISTOGO_URL) {
-  rtg   = require("url").parse(process.env.REDISTOGO_URL);
-  redis = require("redis").createClient(rtg.port, rtg.hostname);
-  redis.auth(rtg.auth.split(":")[1]);
+  // Remove this once we're fully on AWS
+  rtg = require('url').parse(process.env.REDISTOGO_URL);
+  redis = require('redis').createClient(rtg.port, rtg.hostname);
+  redis.auth(rtg.auth.split(':')[1]);
 } else {
-  redis = require("redis").createClient();
+  redis = require('redis').createClient();
 }
 
 module.exports = function (cacheLimit) {
