@@ -13,6 +13,15 @@ var socketIo = require('socket.io');
 var transports = ('PORT' in process.env)? ['xhr-polling'] : ['websocket', 'xhr-polling'];
 var app = express();
 
+var twitter = require('twitter-oauth');
+var twitterAuth = twitter({
+  consumerKey: nconf.get('twitterKey'),
+  domain: nconf.get('domain'),
+  consumerSecret: nconf.get('twitterSecret'),
+  loginCallback: '/twitter/sessions/callback',
+  completeCallback:  '/'
+});
+
 var SEARCH_LIMIT = 3;
 
 app.configure('development, test', function () {
@@ -37,6 +46,10 @@ app.use(express.logger());
 app.get('/', function (request, response) {
   response.send('Hello World!');
 });
+
+app.get('/twitter/sessions/connect', twitterAuth.oauthConnect);
+app.get('/twitter/sessions/callback', twitterAuth.oauthCallback);
+app.get('/twitter/sessions/logout', twitterAuth.logout);
 
 app.get('/api/:query?', function (request, response) {
   var query = response.params.query;

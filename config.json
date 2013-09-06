@@ -11,6 +11,7 @@
   "querySet": [
     "yelp.com",
     "amazon.com",
-    "en.wikipedia.org"
+    "en.wikipedia.org",
+    "twitter.com"
   ]
 }
