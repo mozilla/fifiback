@@ -75,6 +75,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('api/find', function (data) {
     var term = data.term || '';
     var location = (data.location && data.location.trim()) || '';
+    var geolocation = (data.geolocation && data.geolocation.trim()) || '';
     var suggestSet = data.suggestSet || engines.config.suggestSet;
     var querySet = data.querySet || engines.config.querySet;
     var defaultSuggest = engines.getDefaultSuggest();
@@ -84,7 +85,8 @@ io.sockets.on('connection', function (socket) {
     if (!term) {
       return socket.emit('api/suggestDone', {
         term: term,
-        location: location
+        location: location,
+        geolocation: geolocation
       });
     }
 
@@ -93,7 +95,8 @@ io.sockets.on('connection', function (socket) {
       console.error('ERROR: ' + err);
       socket.emit('api/suggestDone', {
         term: term,
-        location: location
+        location: location,
+        geolocation: geolocation
       });
     }
 
@@ -104,11 +107,12 @@ io.sockets.on('connection', function (socket) {
       minus the default engine using the first suggest term returned from the default engine
     */
     suggestSet.forEach(function (engineId) {
-      engines.suggest(term, location, engineId).then(function (result) {
+      engines.suggest(term, location, geolocation, engineId).then(function (result) {
         socket.emit('api/suggestDone', {
           engineId: engineId,
           term: term,
           location: location,
+          geolocation: geolocation,
           secondary: false,
           result: result[1].slice(0, SEARCH_LIMIT)
         });
@@ -118,13 +122,14 @@ io.sockets.on('connection', function (socket) {
 
           // drop our first engine
           suggestSet.slice(1).forEach(function (id) {
-            engines.suggest(suggestion, location, id).then(function (r) {
+            engines.suggest(suggestion, location, geolocation, id).then(function (r) {
               // console.log(term, suggestion, id, r[1]);
               socket.emit('api/suggestDone', {
                 engineId: id,
                 originalTerm: term,
                 term: suggestion,
                 location: location,
+                geolocation: geolocation,
                 secondary: true,
                 result: r[1].slice(0, SEARCH_LIMIT)
               });
@@ -135,7 +140,8 @@ io.sockets.on('connection', function (socket) {
                 engineId: id,
                 term: suggestion,
                 secondary: true,
-                location: location
+                location: location,
+                geolocation: geolocation
               });
             });
           });
@@ -147,7 +153,8 @@ io.sockets.on('connection', function (socket) {
           engineId: engineId,
           term: term,
           secondary: false,
-          location: location
+          location: location,
+          geolocation: geolocation
         });
       });
     }, onError);
@@ -155,9 +162,10 @@ io.sockets.on('connection', function (socket) {
 
   // SUGGEST API
   socket.on('api/suggest', function (data) {
-    var set = data.set || engines.config.suggestSet,
-        term = data.term || '',
-        location = (data.location && data.location.trim()) || '';
+    var set = data.set || engines.config.suggestSet;
+    var term = data.term || '';
+    var location = (data.location && data.location.trim()) || '';
+    var geolocation = (data.geolocation && data.geolocation.trim()) || '';
 
     set.forEach(function (engineId) {
       // Fast path for no term
@@ -165,15 +173,17 @@ io.sockets.on('connection', function (socket) {
         return socket.emit('api/suggestDone', {
           engineId: engineId,
           term: term,
-          location: location
+          location: location,
+          geolocation: geolocation
         });
       }
 
-      engines.suggest(term, location, engineId).then(function (result) {
+      engines.suggest(term, location, geolocation, engineId).then(function (result) {
         socket.emit('api/suggestDone', {
           engineId: engineId,
           term: term,
           location: location,
+          geolocation: geolocation,
           result: result
         });
       }, function (err) {
@@ -182,7 +192,8 @@ io.sockets.on('connection', function (socket) {
         socket.emit('api/suggestDone', {
           engineId: engineId,
           term: term,
-          location: location
+          location: location,
+          geolocation: geolocation
         });
       });
     });
@@ -191,6 +202,7 @@ io.sockets.on('connection', function (socket) {
   socket.on('api/suggestImage', function (data) {
     var term = (data.term && data.term.trim()) || '';
     var location = (data.location && data.location.trim()) || '';
+    var geolocation = (data.geolocation && data.geolocation.trim()) || '';
 
     if (!term) {
       return socket.emit('api/suggestImageDone', {
@@ -199,11 +211,12 @@ io.sockets.on('connection', function (socket) {
       });
     }
 
-    engines.query(term, location, 'google.com').then(function (result) {
+    engines.query(term, location, geolocation, 'google.com').then(function (result) {
       socket.emit('api/suggestImageDone', {
         engineId: data.engineId,
         term: term,
         location: location,
+        geolocation: geolocation,
         result: result
       });
     }, function (err) {
@@ -213,6 +226,7 @@ io.sockets.on('connection', function (socket) {
         engineId: data.engineId,
         term: term,
         location: location,
+        geolocation: geolocation,
         result: ''
       });
     });
@@ -222,20 +236,23 @@ io.sockets.on('connection', function (socket) {
   socket.on('api/query', function (data) {
     var term = data.term || '';
     var location = (data.location && data.location.trim()) || '';
+    var geolocation = (data.geolocation && data.geolocation.trim()) || '';
 
     if (!term) {
       return socket.emit('api/queryDone', {
         engineId: data.engineId,
         term: term,
-        location: location
+        location: location,
+        geolocation: geolocation
       });
     }
 
-    engines.query(term, location, data.engineId).then(function (result) {
+    engines.query(term, location, geolocation, data.engineId).then(function (result) {
       socket.emit('api/queryDone', {
         engineId: data.engineId,
         term: term,
         location: location,
+        geolocation: geolocation,
         result: result
       });
     }, function (err) {
@@ -244,7 +261,8 @@ io.sockets.on('connection', function (socket) {
       socket.emit('api/queryDone', {
         engineId: data.engineId,
         term: term,
-        location: location
+        location: location,
+        geolocation: geolocation
       });
     });
   });

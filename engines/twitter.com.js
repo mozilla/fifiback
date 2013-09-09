@@ -15,10 +15,13 @@ module.exports = new (require('../Engine'))({
   "id": "twitter.com",
   "name": "Twitter",
   "site": "http://api.twitter.com",
-  "queryFunc": function (term, location) {
+  "queryFunc": function (term, location, geolocation) {
     var d = q.defer();
 
-    twitterAuth.search(term, nconf.get('twitterToken'), nconf.get('twitterTokenSecret'), function (err, results) {
+    twitterAuth.fetch('https://api.twitter.com/1.1/search/tweets.json?q=' +
+      term + '&geocode=' + geolocation + ',50mi', nconf.get('twitterToken'),
+      nconf.get('twitterTokenSecret'), function (err, results) {
+
       if (err) {
         d.reject(err);
       } else {

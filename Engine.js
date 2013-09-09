@@ -60,7 +60,7 @@ function request(protocol, url) {
 }
 
 function makeStandardRequest(protocol, urlRaw) {
-  return function req(term, location, engineId) {
+  return function req(term, location, geolocation, engineId) {
     var url = urlRaw.replace('{searchTerms}', encodeURIComponent(term));
         url = url.replace('{geo:name}', encodeURIComponent(location));
 
@@ -69,7 +69,7 @@ function makeStandardRequest(protocol, urlRaw) {
 }
 
 function makeApi(apiName, req) {
-  return function (term, location) {
+  return function (term, location, geolocation) {
     var engineId = this.id;
     var cacheKey = 'fifi-' + engineId + '-' + apiName + '-' + term;
     var cacheProxy = this[apiName + 'Cache'];
@@ -85,7 +85,7 @@ function makeApi(apiName, req) {
       */
       console.log('CALLING SERVICE: ' + apiName + ': ' + engineId + ':' + term + ':' + location);
 
-      return req(term, location, engineId).then(function (result) {
+      return req(term, location, geolocation, engineId).then(function (result) {
         cacheProxy.set(cacheKey, result);
         return result;
       });
@@ -112,7 +112,8 @@ function Engine(opts) {
     this.queryFunc = makeStandardRequest(protocols[this.queryObj.protocol],
                                          this.queryUrl,
                                          this.id,
-                                         this.location);
+                                         this.location,
+                                         this.geolocation);
   }
 
   // Create API methods

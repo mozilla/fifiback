@@ -6,7 +6,7 @@ var config, suggestImpl,
     q = require('q');
 
 function makeApi(apiName) {
-  return function (term, location, engineId) {
+  return function (term, location, geolocation, engineId) {
     var d,
         impl = impls[engineId];
 
@@ -17,9 +17,9 @@ function makeApi(apiName) {
       return d.promise;
     } else {
       if (impl[apiName + 'Translate']) {
-        return impl[apiName + 'Translate'](term, impl[apiName](term, location));
+        return impl[apiName + 'Translate'](term, impl[apiName](term, location, geolocation));
       } else {
-        return impl[apiName](term, location);
+        return impl[apiName](term, location, geolocation);
       }
     }
   };
