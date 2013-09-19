@@ -21,7 +21,7 @@ module.exports = new (require('../Engine'))({
     opHelper.execute('ItemSearch', {
       'SearchIndex': 'Blended',
       'Keywords': term,
-      'ResponseGroup': 'ItemAttributes'
+      'ResponseGroup': 'ItemAttributes,Images'
     }, function (err, results) {
       if (err) {
         d.reject(err);
