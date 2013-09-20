@@ -47,6 +47,24 @@ app.get('/', function (request, response) {
   response.send('Hello World!');
 });
 
+app.get('/foursquare/sessions/connect', function(req, res) {
+  res.writeHead(303, { 'location': foursquare.getAuthClientRedirectUrl() });
+  res.end();
+});
+
+app.get('/foursquare/sessions/callback', function (req, res) {
+  foursquare.getAccessToken({
+    code: req.query.code
+  }, function (error, accessToken) {
+    if(error) {
+      res.send('An error was thrown: ' + error.message);
+    }
+    else {
+      // If we had sessions we could save the accessToken and redirect.
+    }
+  });
+});
+
 app.get('/twitter/sessions/connect', twitterAuth.oauthConnect);
 app.get('/twitter/sessions/callback', twitterAuth.oauthCallback);
 app.get('/twitter/sessions/logout', twitterAuth.logout);

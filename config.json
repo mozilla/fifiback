@@ -10,6 +10,7 @@
 
   "querySet": [
     "yelp.com",
+    "foursquare.com",
     "amazon.com",
     "en.wikipedia.org",
     "twitter.com"

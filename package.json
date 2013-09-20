@@ -14,7 +14,8 @@
     "apac": "git://github.com/ednapiranha/node-apac.git",
     "newrelic": "~0.10.3",
     "yelp": ">= 0.1.1",
-    "twitter-oauth": "*"
+    "twitter-oauth": "*",
+    "node-foursquare": "*"
   },
   "engines": {
     "node": "0.10.x",
