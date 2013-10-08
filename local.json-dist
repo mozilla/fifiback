@@ -22,6 +22,7 @@
     "foursquareClientId": "<foursquare client id>",
     "foursquareClientSecret": "<foursquare client secret>",
     "foursquareRedirectUrl": "<foursquare redirect url>",
+    "bingKey": "<bing key>",
     "wikipediaAPI": "",
     "redisDev": 0,
     "redisTest": 1,
