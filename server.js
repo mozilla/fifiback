@@ -217,6 +217,7 @@ io.sockets.on('connection', function (socket) {
     });
   });
 
+  /*
   socket.on('api/suggestImage', function (data) {
     var term = (data.term && data.term.trim()) || '';
     var location = (data.location && data.location.trim()) || '';
@@ -229,7 +230,7 @@ io.sockets.on('connection', function (socket) {
       });
     }
 
-    engines.query(term, location, geolocation, 'google.com').then(function (result) {
+    engines.query(term, location, geolocation, 'bing.com').then(function (result) {
       socket.emit('api/suggestImageDone', {
         engineId: data.engineId,
         term: term,
@@ -249,6 +250,7 @@ io.sockets.on('connection', function (socket) {
       });
     });
   });
+  */
 
   // QUERY API
   socket.on('api/query', function (data) {

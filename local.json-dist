@@ -5,8 +5,6 @@
     "authUrl": "https://login.persona.org",
     "sessionSecret": "secret",
     "sessionCookie": "session",
-    "googleAPI": "<simple api key>",
-    "googleCX": "<cx id>",
     "httpReferer": "<referer>",
     "amazonKey": "<key>",
     "amazonSecret": "<secret>",

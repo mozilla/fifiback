@@ -1,16 +1,14 @@
 {
-  "suggestDefault": "google.com",
+  "suggestDefault": "bing.com",
 
   "suggestSet": [
     "bing.com",
-    "google.com",
     "yelp.com",
     "amazon.com",
     "en.wikipedia.org"
   ],
 
   "querySet": [
-    "google.com",
     "yelp.com",
     "foursquare.com",
     "amazon.com",
