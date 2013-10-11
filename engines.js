@@ -1,14 +1,16 @@
 /*jshint node: true */
-var config, suggestImpl,
-    impls = {},
-    path = require('path'),
-    fs = require('fs'),
-    q = require('q');
+var config;
+var suggestImpl = {};
+var impls = {};
+
+var path = require('path');
+var fs = require('fs');
+var q = require('q');
 
 function makeApi(apiName) {
   return function (term, location, geolocation, engineId) {
-    var d,
-        impl = impls[engineId];
+    var d;
+    var impl = impls[engineId];
 
     //Just ignore search engines we do not know
     if (!impl) {
@@ -33,8 +35,8 @@ var engines = {
     return impls[id];
   },
 
-  getDefaultSuggest: function () {
-    return suggestImpl;
+  getDefaultSuggest: function (searchType) {
+    return suggestImpl[searchType];
   },
 
   loadConfig: function () {
@@ -49,10 +51,12 @@ var engines = {
       impls[id] = require('./engines/' + id);
     });
 
-    suggestImpl = impls[config.suggestDefault];
+    for (k in config) {
+      suggestImpl[k] = impls[config[k].suggestDefault];
 
-    if (!suggestImpl) {
-      throw new Error('No suggest implementation for ' + config.suggestDefault);
+      if (!suggestImpl[k]) {
+        console.log('No suggest implementation for ' + config[k].suggestDefault);
+      }
     }
   }
 

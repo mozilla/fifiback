@@ -1,19 +1,36 @@
 {
-  "suggestDefault": "bing.com",
+  "food": {
+    "suggestDefault": "bing.com",
 
-  "suggestSet": [
-    "bing.com",
-    "yelp.com",
-    "amazon.com",
-    "en.wikipedia.org"
-  ],
+    "suggestSet": [
+      "bing.com",
+      "yelp.com",
+      "amazon.com",
+      "en.wikipedia.org"
+    ],
 
-  "querySet": [
-    "yelp.com",
-    "foursquare.com",
-    "amazon.com",
-    "en.wikipedia.org",
-    "twitter.com",
-    "bing.com"
-  ]
+    "querySet": [
+      "yelp.com",
+      "foursquare.com",
+      "amazon.com",
+      "en.wikipedia.org",
+      "twitter.com",
+      "bing.com"
+    ]
+  },
+
+  "news": {
+    "suggestDefault": "bing.com",
+
+    "suggestSet": [
+      "bing.com",
+      "boxfish.com"
+    ],
+
+    "querySet": [
+      "twitter.com",
+      "bing.com",
+      "boxfish.com"
+    ]
+  }
 }

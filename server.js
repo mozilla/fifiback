@@ -89,12 +89,15 @@ io.configure(function () {
 io.sockets.on('connection', function (socket) {
   // FIND API. The main API
   socket.on('api/find', function (data) {
+    var searchType = data.search || 'food'; // fallback to food for now
+    console.log('default search find type ', searchType);
+
     var term = data.term || '';
     var location = (data.location && data.location.trim()) || '';
     var geolocation = (data.geolocation && data.geolocation.trim()) || '';
-    var suggestSet = data.suggestSet || engines.config.suggestSet;
-    var querySet = data.querySet || engines.config.querySet;
-    var defaultSuggest = engines.getDefaultSuggest();
+    var suggestSet = data.suggestSet || engines.config[searchType].suggestSet;
+    var querySet = data.querySet || engines.config[searchType].querySet;
+    var defaultSuggest = engines.getDefaultSuggest(searchType);
     var secondary = data.secondary || false;
     var suggestion;
 
@@ -178,7 +181,10 @@ io.sockets.on('connection', function (socket) {
 
   // SUGGEST API
   socket.on('api/suggest', function (data) {
-    var set = data.set || engines.config.suggestSet;
+    var searchType = data.search || 'food'; // fallback to food for now
+    console.log('default search suggest type ', searchType);
+
+    var set = data.set || engines.config[searchType].suggestSet;
     var term = data.term || '';
     var location = (data.location && data.location.trim()) || '';
     var geolocation = (data.geolocation && data.geolocation.trim()) || '';
@@ -190,7 +196,8 @@ io.sockets.on('connection', function (socket) {
           engineId: engineId,
           term: term,
           location: location,
-          geolocation: geolocation
+          geolocation: geolocation,
+          search: searchtype
         });
       }
 
@@ -200,7 +207,8 @@ io.sockets.on('connection', function (socket) {
           term: term,
           location: location,
           geolocation: geolocation,
-          result: result
+          result: result,
+          search: searchType
         });
       }, function (err) {
         //Just eat errors for now.
@@ -209,7 +217,8 @@ io.sockets.on('connection', function (socket) {
           engineId: engineId,
           term: term,
           location: location,
-          geolocation: geolocation
+          geolocation: geolocation,
+          search: searchType
         });
       });
     });
@@ -252,6 +261,9 @@ io.sockets.on('connection', function (socket) {
 
   // QUERY API
   socket.on('api/query', function (data) {
+    var searchType = data.search || 'food'; // fallback to food for now
+    console.log('default search query type ', searchType);
+
     var term = data.term || '';
     var location = (data.location && data.location.trim()) || '';
     var geolocation = (data.geolocation && data.geolocation.trim()) || '';
@@ -261,7 +273,8 @@ io.sockets.on('connection', function (socket) {
         engineId: data.engineId,
         term: term,
         location: location,
-        geolocation: geolocation
+        geolocation: geolocation,
+        search: searchType
       });
     }
 
@@ -271,7 +284,8 @@ io.sockets.on('connection', function (socket) {
         term: term,
         location: location,
         geolocation: geolocation,
-        result: result
+        result: result,
+        search: searchType
       });
     }, function (err) {
       //Just eat errors for now.
@@ -280,7 +294,8 @@ io.sockets.on('connection', function (socket) {
         engineId: data.engineId,
         term: term,
         location: location,
-        geolocation: geolocation
+        geolocation: geolocation,
+        search: searchType
       });
     });
   });
