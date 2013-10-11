@@ -1,0 +1,7 @@
+exports.config = {
+  app_name: [],
+  license_key: '',
+  logging: {
+    filepath: 'stdout'
+  }
+};

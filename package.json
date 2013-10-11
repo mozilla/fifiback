@@ -12,7 +12,7 @@
     "nconf": ">= 0.6.7",
     "request": ">= 2.26.0",
     "apac": "git://github.com/ednapiranha/node-apac.git",
-    "newrelic": "~0.10.3",
+    "newrelic": "0.11.5",
     "yelp": ">= 0.1.1",
     "twitter-oauth": "*",
     "node-foursquare": "*"
