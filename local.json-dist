@@ -22,6 +22,8 @@
     "foursquareRedirectUrl": "<foursquare redirect url>",
     "bingKey": "<bing key>",
     "wikipediaAPI": "",
+    "boxfishKey": "<boxfish key>",
+    "boxfishSampleCableLineup": "<boxfish cable key>",
     "redisDev": 0,
     "redisTest": 1,
     "redisProd": 2,

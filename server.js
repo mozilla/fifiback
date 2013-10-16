@@ -8,7 +8,6 @@ var nconf = require('nconf');
 nconf.argv().env().file({ file: 'local.json' });
 
 var socketIo = require('socket.io');
-var transports = ('PORT' in process.env)? ['xhr-polling'] : ['websocket', 'xhr-polling'];
 var app = express();
 
 var twitter = require('twitter-oauth');
@@ -73,6 +72,13 @@ app.get('/api/:query?', function (request, response) {
   response.send('Hello: ' + query);
 });
 
+app.all('/*', function (req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+});
+
 var port = process.env.PORT || nconf.get('authPort');
 
 var io = socketIo.listen(app.listen(port, function () {
@@ -81,7 +87,7 @@ var io = socketIo.listen(app.listen(port, function () {
 
 // Heroku does not support web sockets, just long polling
 io.configure(function () {
-  io.set('transports', transports);
+  io.set('transports', ['websocket', 'xhr-polling']);
   io.set('log level', 1);
   io.set('polling duration', 10);
 });
@@ -89,7 +95,7 @@ io.configure(function () {
 io.sockets.on('connection', function (socket) {
   // FIND API. The main API
   socket.on('api/find', function (data) {
-    var searchType = data.search || 'food'; // fallback to food for now
+    var searchType = data.search || 'news'; // fallback to news for now
     console.log('default search find type ', searchType);
 
     var term = data.term || '';
@@ -127,6 +133,7 @@ io.sockets.on('connection', function (socket) {
     */
     suggestSet.forEach(function (engineId) {
       engines.suggest(term, location, geolocation, engineId).then(function (result) {
+        console.log('*** ', engineId, result)
         socket.emit('api/suggestDone', {
           engineId: engineId,
           term: term,
