@@ -87,9 +87,9 @@ var io = socketIo.listen(app.listen(port, function () {
 
 // Heroku does not support web sockets, just long polling
 io.configure(function () {
-  io.set('transports', ['websocket', 'xhr-polling']);
+  io.set('transports', ['websocket']);
   io.set('log level', 1);
-  io.set('polling duration', 10);
+  //io.set('polling duration', 10);
 });
 
 io.sockets.on('connection', function (socket) {
