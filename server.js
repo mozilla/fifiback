@@ -133,7 +133,6 @@ io.sockets.on('connection', function (socket) {
     */
     suggestSet.forEach(function (engineId) {
       engines.suggest(term, location, geolocation, engineId).then(function (result) {
-        console.log('*** ', engineId, result)
         socket.emit('api/suggestDone', {
           engineId: engineId,
           term: term,
