@@ -33,11 +33,11 @@ app.use(express.static(__dirname + '/public'));
 app.locals.pretty = true;
 app.use(app.router);
 
-app.configure('development, test', function () {
+app.configure('development, test, staging', function () {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-app.configure('development', function () {
+app.configure('development, staging', function () {
   app.set('fifi', nconf.get('redisDev'));
 });
 
