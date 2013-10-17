@@ -21,6 +21,18 @@ var twitterAuth = twitter({
 
 var SEARCH_LIMIT = 3;
 
+app.set('views', __dirname + '/views');
+app.set('view engine', 'html');
+app.set('view options', { layout: false });
+if (!process.env.NODE_ENV) {
+  app.use(express.logger('dev'));
+}
+app.use(express.bodyParser());
+app.use(express.methodOverride());
+app.use(express.static(__dirname + '/public'));
+app.locals.pretty = true;
+app.use(app.router);
+
 app.configure('development, test', function () {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
@@ -40,8 +52,8 @@ app.configure('production', function () {
 
 app.use(express.logger());
 
-app.get('/', function (request, response) {
-  response.send('Hello World!');
+app.get('/', function (req, res) {
+  res.render('index');
 });
 
 app.get('/foursquare/sessions/connect', function(req, res) {
@@ -70,13 +82,6 @@ app.get('/api/:query?', function (request, response) {
   var query = response.params.query;
 
   response.send('Hello: ' + query);
-});
-
-app.all('/*', function (req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE,OPTIONS');
-  res.header('Access-Control-Allow-Headers', 'Content-Type, X-Requested-With');
-  next();
 });
 
 var port = process.env.PORT || nconf.get('authPort');

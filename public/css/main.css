@@ -1,0 +1,542 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed,
+figure, figcaption, footer, header, hgroup,
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    font-size: 100%;
+    font: inherit;
+    vertical-align: baseline;
+}
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure,
+footer, header, hgroup, menu, nav, section {
+    display: block;
+}
+body {
+    line-height: 1;
+}
+ol, ul {
+    list-style: none;
+}
+blockquote, q {
+    quotes: none;
+}
+blockquote:before, blockquote:after,
+q:before, q:after {
+    content: '';
+    content: none;
+}
+table {
+    border-collapse: collapse;
+    border-spacing: 0;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1, p, span {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+a {
+  color: #2518B5;
+}
+
+#wrapper {
+  padding: 0;
+  position: relative;
+  width: 100%;
+  z-index: 1;
+  background-color: #eee;
+}
+
+#wrapper:before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center top;
+  background-clip: border-box;
+  background-attachment: fixed;
+  z-index: -1;
+  height: 100%;
+  width: 100%;
+}
+
+#wrapper.fifi-find-box-focused:before {
+  -webkit-filter: grayscale(1);
+     -moz-filter: grayscale(1);
+          filter: grayscale(1);
+
+  -webkit-transition: all .5s ease;
+     -moz-transition: all .5s ease;
+          transition: all .5s ease;
+
+  -webkit-transition-delay: 1s;
+     -moz-transition-delay: 1s;
+          transition-delay: 1s;
+
+  -webkit-transform: translateZ(0);
+     -moz-transform: translateZ(0);
+          transform: translateZ(0);
+}
+
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : portrait) {
+  /* For portrait layouts only */
+  #wrapper {
+    height: 1024px;
+  }
+  #fifi-find-box {
+    top: 492px; /* 1024 / 2 = 512 - (40px / 2 = 20) = 492 */
+  }
+  .suggestions,
+  .suggestions-secondary {
+    width: 384px;
+  }
+}
+@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
+  /* For landscape layouts only */
+  #wrapper {
+    height: 768px;
+  }
+  .suggestions,
+  .suggestions-secondary {
+    width: 512px;
+  }
+  #fifi-find-box {
+    top: 364px; /* 768 / 2 = 384 - (40px / 2 = 20) = 364 */
+  }
+}
+
+#fifi-find-box {
+  position: absolute;
+  width: 100%;
+  text-align: center;
+  top: 40%;
+  transition: top 0.5s, left 0.5s;
+  -webkit-transition: top 0.5s, left 0.5s;
+}
+
+#fifi-find-box.fifi-find-box-focused {
+  top: 5px;
+}
+
+#fifi-find {
+  font-size: 24px;
+  height: 40px;
+  padding-left: 10px;
+  width: 350px;
+  color: #555;
+  background-color: rgba(255,255,255,0.9);
+  border: 1px solid #ddd;
+  border-right: none;
+  margin: 0;
+  border-radius: 2px 0 0 2px;
+  transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+  -webkit-transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
+  -moz-box-sizing: border-box;
+       box-sizing: border-box;
+}
+
+#fifi-find::-webkit-input-placeholder {
+  font-family: FontAwesome;
+}
+#fifi-find::-moz-placeholder {
+  font-family: FontAwesome;
+}
+
+#fifi-find:focus {
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
+  outline: 0px none;
+}
+
+#geolocation {
+  font-size: 14px;
+  line-height: 40px;
+  height: 40px;
+  color: #999;
+  vertical-align: top;
+  cursor: pointer;
+  background-color: inherit;
+  border: none;
+  white-space: nowrap;
+  padding: 0 10px;
+  border-radius: 0 2px 2px 0;
+  border: 1px solid #ddd;
+  border-left: none;
+  background-color: rgba(255,255,255,0.9);
+  margin: 0;
+  max-width: 200px;
+  overflow: hidden;
+  display: inline-block;
+  -moz-box-sizing: border-box;
+       box-sizing: border-box;
+}
+
+#geolocation:active {
+  color: #444;
+}
+
+#suggestions,
+#details {
+  margin: 0 20px;
+  padding-top: 54px;
+}
+
+.fifi-suggest {
+  text-align: center;
+  width: 100%;
+}
+
+.suggestions,
+.suggestions-secondary {
+  background-color: #fff;
+  margin-left: 5px;
+  width: 320px;
+  display: inline-block;
+  vertical-align: top;
+  text-align: left;
+}
+
+.suggestions-secondary .secondary.term span {
+  color: #888;
+}
+
+.suggestions .primary,
+.suggestions-secondary .secondary {
+  display: block;
+  margin: 3px;
+  position: relative;
+}
+
+.suggestions .primary span,
+.suggestions-secondary .secondary span {
+  color: #444;
+  overflow: hidden;
+  padding: 5px;
+  font-size: 32px;
+  line-height: 1.3;
+}
+
+#details-list,
+#definition {
+  vertical-align: top;
+  display: inline-block;
+}
+
+@media only screen and (min-width: 768px) {
+  /* For portrait layouts only */
+  #details-list {
+    width: 492px;
+  }
+}
+@media only screen and (min-width: 1024px) {
+  /* For landscape layouts only */
+  #details-list {
+    width: 650px;
+  }
+}
+
+#definition {
+  width: 320px;
+  margin-right: 5px;
+  background-color: #fff;
+}
+
+#details-list li {
+  width: 320px;
+  margin-left: 5px;
+  margin-bottom: 5px;
+  float: left;
+  background-color: #fff;
+}
+
+#definition-text {
+  max-height: 300px;
+  padding: 5px;
+  overflow: hidden;
+  margin-bottom: 10px;
+}
+
+#definition-links li {
+  margin: 5px 0;
+}
+
+.result-item:first-child {
+  margin-top: 0px;
+}
+
+.result-item {
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 90%;
+  margin-top: 1px;
+  line-height: 1.2;
+  color: #444;
+  background-color: #eee;
+  overflow: hidden;
+}
+
+.result-item-fixed-height {
+  height: 100px;
+}
+
+.result-header {
+  position: relative;
+  font-family: Helvetica, Arial, sans-serif;
+  height: 200px;
+  background-size: cover;
+  background-repeat: no-repeat;
+  overflow: hidden;
+}
+
+.result-header-info {
+  position: absolute;
+  bottom: 0px;
+  left: 0px;
+  width: 100%;
+  color: #444;
+  padding: 5px 0;
+  background-color: rgba(255,255,255,0.85);
+  line-height: 1.3;
+}
+
+.result-header-address,
+.result-header-reviews,
+.result-header-phone,
+.result-header-snippet {
+  font-size: 90%;
+}
+
+.result-header-title,
+.result-header-address,
+.result-header-reviews,
+.result-header-phone,
+.result-header-price {
+  padding: 0 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-header-snippet {
+  padding: 0 10px;
+}
+
+.result-reviews,
+.result-header-reviews,
+.result-snippet,
+.result-header-snippet {
+  color: #999;
+}
+
+.result-header-phone {
+  color: #444;
+  text-decoration: none;
+}
+
+.result-info {
+  line-height: 1.6;
+  padding: 15px 0px;
+  overflow: hidden;
+  height: 100px;
+  width: 220px;
+  vertical-align: top;
+  display: inline-block;
+}
+
+.result-image-wrapper {
+  display: inline-block;
+  text-align: center;
+  width: 100px;
+  height: 100px;
+  background-color: #fff;
+}
+
+.result-image {
+  max-width: 100px;
+  max-height: 100px;
+}
+
+.result-header-title,
+.result-title {
+  font-weight: bold;
+  font-size: 100%;
+  white-space: nowrap;
+}
+
+.result-title,
+.result-reviews,
+.result-price {
+  padding: 0 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.result-snippet {
+  white-space: nowrap;
+}
+
+.icon {
+  padding-left: 18px;
+  vertical-align: top;
+  background-repeat: no-repeat;
+  background-position: top left;
+}
+
+.venue-rating {
+  color: #fff;
+  padding: 5px;
+  text-align: center;
+  font-size: 14px;
+  line-height: 14px;
+  border-radius: 4px;
+  display: inline-block;
+}
+
+.venue-rating-positive {
+  background-color: #69BF13;
+}
+
+.venue-rating-neutral {
+  background-color: #bfbfbf;
+}
+
+.icon-star,
+.icon-star-half {
+  color: #e3cf7a;
+}
+
+.icon-star-empty,
+.icon-star-half-empty {
+  color: #999;
+}
+
+.icon-star-half-colored {
+  position: relative;
+}
+
+.icon-star-half {
+  position: absolute;
+  top: 0;
+}
+
+.search-brand-icon {
+  position: absolute;
+  right: 0px;
+  top: 0px;
+  font-size: 12px;
+  padding: 1px 2px;
+  background-color: #fff;
+  border-radius: 0 0 0 2px;
+  color: #666;
+  opacity: 0.75;
+}
+
+.search-brand-image {
+  vertical-align: middle;
+}
+
+.result-tweet {
+  padding: 20px;
+}
+
+.result-tweet-user-info {
+  display: inline-block;
+  vertical-align: top;
+  font-size: 110%;
+}
+
+.result-tweet-user-name,
+.result-tweet-user-screen-name {
+  line-height: 1.4;
+}
+
+.result-tweet-user-screen-name {
+  color: #BEBEBE;
+}
+
+.result-tweet-user-screen-name:before {
+  content: "@";
+  color: #BEBEBE;
+}
+
+.result-tweet-text {
+  margin: 10px 0;
+}
+
+.result-tweet-time-ago {
+  color: #BEBEBE;
+  display: inline-block;
+}
+
+.icon-twitter {
+  color: #BEBEBE;
+  float: right;
+}
+
+.wikipedia {
+  background-image: url('../images/wikipedia-16x16.png');
+}
+
+.youtube {
+  background-image: url('../images/youtube-16x16.png');
+}
+
+.twitter {
+  background-image: url('../images/twitter-16x16.png');
+}
+
+.vimeo {
+  background-image: url('../images/vimeo-16x16.png');
+}
+
+.facebook {
+  background-image: url('../images/facebook-16x16.png');
+}
+
+/**
+ * For modern browsers
+ * 1. The space content is one way to avoid an Opera bug when the
+ *    contenteditable attribute is included anywhere else in the document.
+ *    Otherwise it causes space to appear at the top and bottom of elements
+ *    that are clearfixed.
+ * 2. The use of `table` rather than `block` is only necessary if using
+ *    `:before` to contain the top-margins of child elements.
+ */
+.cf:before,
+.cf:after {
+    content: " "; /* 1 */
+    display: table; /* 2 */
+}
+
+.cf:after {
+    clear: both;
+}
+
+/**
+ * For IE 6/7 only
+ * Include this rule to trigger hasLayout and contain floats.
+ */
+.cf {
+    *zoom: 1;
+}
