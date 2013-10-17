@@ -25,7 +25,7 @@ module.exports = new (require('../Engine'))({
       if (err) {
         d.reject(err);
       } else {
-        d.resolve(JSON.parse(body));
+        d.resolve(body);
       }
     });
 
