@@ -23,25 +23,7 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
     var results = data.result;
     var value = find.val().toString();
 
-    if (results === 'undefined') {
-      /*
-      nunjucks.render('results.html', {
-        engineSet: {},
-        found: 0
-      }, function (err, res) {
-        wrapper.find('.suggestions').append(res);
-      });
-      */
-    } else {
-      /*
-      for (var i in autoset.results) {
-        socket.emit('api/suggestImage', {
-          location: geo.getLastLocation(),
-          engineId: 'google.com',
-          term: i
-        });
-      }
-      */
+    if (!!results) {
       if (data.secondary) {
         if (value === data.originalTerm) {
           autoset.generateSecondary(value, results, data.engineId, function () {
@@ -62,7 +44,9 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
               engineSet: autoset.engines,
               found: utils.keySize(autoset.engines)
             }, function (err, res) {
-              if (err) console.error(err);
+              if (err) {
+                console.error(err);
+              }
               else wrapper.find('.suggestions').html(res);
             });
           });
@@ -102,9 +86,6 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
       switch (data.engineId) {
         case 'boxfish.com':
-            console.log("hi rory")
-            console.log(data);
-
             var content = wrapper.find('#details-list li[data-engine="' + data.engineId + '"] .content');
 
             //parse out the channels that boxfish is returning related to these keywords
@@ -498,50 +479,6 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
   if (geo.haveGeolocationPermission()) {
     geo.startWatchingPosition(wrapper.find('#geolocation-name'));
   }
-
-  geo.on('geolocation', function geoImg() {
-    // only call this function once
-    geo.off('geolocation', geoImg);
-
-    var position = geo.getLastPosition();
-    var lat = parseFloat(position.coords.latitude, 10);
-    var lng = parseFloat(position.coords.longitude, 10);
-
-    var API_KEY = "bcef359dcec703ca6580b92c5682f9f9";
-    // http://www.flickr.com/services/api/flickr.photos.search.html
-    var options = [ 'method=flickr.photos.search',
-                    'api_key=' + API_KEY,
-                    'per_page=20',
-                    // accuracy of location 6 = Region
-                    'accuracy=6',
-                    // popular tags via http://www.flickr.com/photos/tags/
-                    'tags=architecture,sky,nature,travel',
-                    // 1 = photos only, no screenshots etc
-                    'content_type=1',
-                    // 1 = safe
-                    'safe_search=1',
-                    // latt / long
-                    'lat=' + lat,
-                    'lon=' + lng,
-                    'format=json',
-                    'jsoncallback=?'
-                  ].join('&');
-
-    var url = encodeURI("http://api.flickr.com/services/rest/?" + options);
-    $.getJSON(url, function(data){
-      var src;
-      var item = data.photos.photo[Math.floor(Math.random() * data.photos.photo.length)];
-      if (item) {
-        src = "http://farm"+ item.farm +".static.flickr.com/"+ item.server +"/"+ item.id +"_"+ item.secret +"_z.jpg";
-        // it's the only way to :before CSS to the page :(
-        $("body").append(
-          $("<style/>").text(
-            "#wrapper:before { background-image:" + 'url(' + src + ');'  + " } "
-          )
-        );
-      }
-    });
-  });
 
   function goSearch(term) {
     wrapper.find('#suggestions').hide();
