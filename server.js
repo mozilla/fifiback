@@ -37,17 +37,8 @@ app.configure('development, test, staging', function () {
   app.use(express.errorHandler({ dumpExceptions: true, showStack: true }));
 });
 
-app.configure('development, staging', function () {
-  app.set('fifi', nconf.get('redisDev'));
-});
-
-app.configure('test', function () {
-  app.set('fifi', nconf.get('redisTest'));
-});
-
 app.configure('production', function () {
   app.use(express.errorHandler());
-  app.set('fifi', nconf.get('redisProd'));
 });
 
 app.use(express.logger());
@@ -130,12 +121,26 @@ io.sockets.on('connection', function (socket) {
       });
     }
 
+    suggestSet.forEach(function (engineId) {
+      engines.suggest(term, location, geolocation, engineId).then(function (result) {
+        socket.emit('api/suggestDone', {
+          engineId: engineId,
+          term: term,
+          location: location,
+          geolocation: geolocation,
+          secondary: false,
+          result: result[1].slice(0, SEARCH_LIMIT)
+        });
+      });
+    });
+
     /*
       iterate through all suggestion engines for the term sent
       NOTE: the default suggestion engine `defaultSuggest` should be the first element in the `suggestSet` array
       once the default engine returns suggestions we fire off a similar set of queries to the `suggestSet` engines
       minus the default engine using the first suggest term returned from the default engine
     */
+    /*
     suggestSet.forEach(function (engineId) {
       engines.suggest(term, location, geolocation, engineId).then(function (result) {
         socket.emit('api/suggestDone', {
@@ -188,6 +193,7 @@ io.sockets.on('connection', function (socket) {
         });
       });
     }, onError);
+*/
   });
 
   // SUGGEST API
@@ -234,41 +240,6 @@ io.sockets.on('connection', function (socket) {
       });
     });
   });
-
-  /*
-  socket.on('api/suggestImage', function (data) {
-    var term = (data.term && data.term.trim()) || '';
-    var location = (data.location && data.location.trim()) || '';
-    var geolocation = (data.geolocation && data.geolocation.trim()) || '';
-
-    if (!term) {
-      return socket.emit('api/suggestImageDone', {
-        term: term,
-        image: ''
-      });
-    }
-
-    engines.query(term, location, geolocation, 'bing.com').then(function (result) {
-      socket.emit('api/suggestImageDone', {
-        engineId: data.engineId,
-        term: term,
-        location: location,
-        geolocation: geolocation,
-        result: result
-      });
-    }, function (err) {
-      //Just eat errors for now.
-      console.error('ERROR: ' + err);
-      socket.emit('api/suggestImageDone', {
-        engineId: data.engineId,
-        term: term,
-        location: location,
-        geolocation: geolocation,
-        result: ''
-      });
-    });
-  });
-  */
 
   // QUERY API
   socket.on('api/query', function (data) {

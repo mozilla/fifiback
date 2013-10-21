@@ -1,9 +1,5 @@
 # Fifi Back End
 
-## Prerequisites
-
-* redis
-
 ## Installation
 
 * Clone this repo, then do `npm install` in the repo directory.

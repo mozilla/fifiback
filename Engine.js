@@ -1,6 +1,5 @@
 'use strict';
 
-var cache = require('./cache');
 var q = require('q');
 var url = require('url');
 
@@ -71,24 +70,11 @@ function makeStandardRequest(protocol, urlRaw) {
 function makeApi(apiName, req) {
   return function (term, location, geolocation) {
     var engineId = this.id;
-    var cacheKey = 'fifi-' + engineId + '-' + apiName + '-' + term;
-    var cacheProxy = this[apiName + 'Cache'];
 
-    // First check in local cache
-    return cacheProxy.get(cacheKey).then(function (value) {
-      // If a valid value, just return it.
-      /*
-      if (value) {
-        console.log('USING CACHE: ' + apiName + ': ' + engineId + ':' + term + ':' + location);
-        return value;
-      }
-      */
-      console.log('CALLING SERVICE: ' + apiName + ': ' + engineId + ':' + term + ':' + location);
+    console.log('CALLING SERVICE: ' + apiName + ': ' + engineId + ':' + term + ':' + location);
 
-      return req(term, location, geolocation, engineId).then(function (result) {
-        cacheProxy.set(cacheKey, result);
-        return result;
-      });
+    return req(term, location, geolocation, engineId).then(function (result) {
+      return result;
     });
   };
 }
@@ -119,18 +105,6 @@ function Engine(opts) {
   // Create API methods
   this.suggest = makeApi('suggest', this.suggestFunc);
   this.query = makeApi('query', this.queryFunc);
-
-  // Create cache proxies
-  this.suggestCache = cache(this.suggestCacheMs);
-  this.queryCache = cache(this.queryCacheMs);
 }
-
-Engine.prototype = {
-  // These properties are on the prototype, so that they can be
-  // overridden by constructor options for specific instances.
-
-  suggestCacheMs: (4 /*hours*/ * 60 /*minutes*/ * 60 * 1000),
-  queryCacheMs:   (1 /*hours*/ * 60 /*minutes*/ * 60 * 1000),
-};
 
 module.exports = Engine;
