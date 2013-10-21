@@ -123,7 +123,39 @@ io.sockets.on('connection', function (socket) {
 
     suggestSet.forEach(function (engineId) {
       engines.suggest(term, location, geolocation, engineId).then(function (result) {
-        socket.emit('api/suggestDone', {
+          //Collapse down the results from boxfish to a simple array
+          if(engineId === "boxfish.com"){
+              var bfResultsArr = [];
+              //append channel names that match autocomplete
+              if(result.channels){
+                  result.channels.forEach(function(item){
+                      bfResultsArr.append(item.name);
+                  });
+              }
+
+              //append programs
+              if(result.programs){
+                  result.programs.forEach(function(item){
+                      bfResultsArr.append(item.name);
+                  });
+              }
+              //append mentions
+              if(result.programs){
+                  result.programs.forEach(function(item){
+                      bfResultsArr.append(item.mention);
+                  });
+              }
+
+              //overwrite the result array to match what the existing code expects
+              //TODO we should probably rethink this code path and how the default and suggestSet engines get triggered and how to
+              // generically manipulate their results, our current methodology is a little tied to google and bing
+
+              result = [term, bfResultsArr];
+
+              console.log(bfResultsArr)
+          }
+
+          socket.emit('api/suggestDone', {
           engineId: engineId,
           term: term,
           location: location,
