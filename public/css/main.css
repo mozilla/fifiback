@@ -102,6 +102,10 @@ a {
     color: white;
 }
 
+#details-list {
+  width: 100%;
+}
+
 
 #wrapper {
   padding: 0;
@@ -247,6 +251,10 @@ a {
   padding-top: 54px;
 }
 
+#details {
+  padding-top: 180px;
+}
+
 .fifi-suggest {
   text-align: center;
   margin-top: 80px;
@@ -256,10 +264,8 @@ a {
 .suggestions,
 .suggestions-secondary {
   background-color: #fff;
+  margin: 0 auto;
   width: 505px;
-  display: inline-block;
-  vertical-align: top;
-  text-align: left;
 }
 
 .suggestions-secondary .secondary.term span {
@@ -291,26 +297,9 @@ a {
   display: inline-block;
 }
 
-#details-list {
-
-}
-
-@media only screen and (min-width: 768px) {
-  /* For portrait layouts only */
-  #details-list {
-    width: 492px;
-  }
-}
-@media only screen and (min-width: 1024px) {
-  /* For landscape layouts only */
-  #details-list {
-    width: 650px;
-  }
-}
-
 #definition {
-  width: 320px;
-  margin-right: 5px;
+  width: 300px;
+  margin: 5px;
   background-color: #fff;
 }
 
