@@ -59,18 +59,63 @@ a {
   color: #2518B5;
 }
 
+
+#header {
+    background: #F0F0F0;
+    width:100%;
+    height: 65px;
+    /*top: 0px;*/
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+
+    /* sticky header */
+    position:fixed;
+    top:0px;
+    margin:auto;
+    z-index:100000;
+}
+
+.category-buttons {
+    width: 200px;
+    height: 65px;
+    color: #D8D8D8;
+}
+
+.category-buttons h1 {
+    position: fixed;
+    margin-left: 30px;
+    margin-top: 24px;
+    margin-bottom: 29px;
+}
+
+.category-buttons img {
+    position: fixed;
+    margin-top: 23px;
+    margin-left: 150px;
+}
+
+.category-buttons-active {
+    /*overflow:auto;*/
+    background: orange;
+    color: white;
+}
+
+
 #wrapper {
   padding: 0;
-  position: relative;
+  position: absolute;
   width: 100%;
+  height: 100%;
   z-index: 1;
-  background-color: #eee;
+  top: 65px;
 }
 
 #wrapper:before {
   content: "";
   position: fixed;
-  top: 0;
+  top: 75px;
   left: 0;
   background-repeat: no-repeat;
   background-size: cover;
@@ -78,7 +123,6 @@ a {
   background-clip: border-box;
   background-attachment: fixed;
   z-index: -1;
-  height: 100%;
   width: 100%;
 }
 
@@ -131,13 +175,14 @@ a {
   position: absolute;
   width: 100%;
   text-align: center;
-  top: 40%;
+  top: 150px;
   transition: top 0.5s, left 0.5s;
   -webkit-transition: top 0.5s, left 0.5s;
+  background: #ffffff;
 }
 
 #fifi-find-box.fifi-find-box-focused {
-  top: 5px;
+  top: 75px;
 }
 
 #fifi-find {

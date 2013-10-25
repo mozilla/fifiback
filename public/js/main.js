@@ -15,6 +15,24 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
   nunjucks.configure('/templates', { autoescape: true });
 
+
+  /* search category buttons */
+  var searchCategory = "news";
+
+  $( document ).ready(function() {
+      $(".category-buttons").click(function(event) {
+
+          if(event.currentTarget.id !== searchCategory){
+              //reset the previously active category
+              $("#"+searchCategory).toggleClass("category-buttons-active");
+              //set the new button
+              $(event.currentTarget).toggleClass("category-buttons-active")
+              searchCategory = event.currentTarget.id;
+          }
+      });
+  });
+
+
   // Listen for data from server and convert to module events
   socket.on('api/suggestDone', function (data) {
     console.log('GOT api/suggestDone: ', data);
@@ -440,7 +458,7 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
       socket.emit('api/find', {
         term: value,
         location: geo.getLastLocation(),
-        search: 'news',
+        search: searchCategory,
         geolocation: geo.getLastPosition().coords.latitude + ',' + geo.getLastPosition().coords.longitude
       });
     }
@@ -493,7 +511,7 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
         location: geo.getLastLocation(),
         geolocation: geo.getLastPosition().coords.latitude + ',' + geo.getLastPosition().coords.longitude,
         engineId: engine,
-        search: 'news'
+        search: searchCategory
       });
     }
 
