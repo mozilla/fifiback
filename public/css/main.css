@@ -299,12 +299,24 @@ a {
 
 #definition {
   width: 300px;
-  margin: 5px;
-  background-color: #fff;
+  background-color: #eee;
+}
+
+.left, .right {
+  float: left;
+  min-width: 320px;
+}
+
+.left {
+  width: 20%;
+}
+
+.right {
+  width: 71%;
 }
 
 #details-list li {
-  width: 320px;
+  width: 310px;
   margin-left: 5px;
   margin-bottom: 5px;
   float: left;
@@ -313,8 +325,13 @@ a {
 
 #definition-text {
   max-height: 300px;
-  padding: 5px;
+  padding: 15px;
   overflow: hidden;
+  margin-bottom: 10px;
+  line-height: 20px;
+}
+
+#definition-text p {
   margin-bottom: 10px;
 }
 
