@@ -78,14 +78,16 @@ a {
 }
 
 .category-buttons {
-    width: 200px;
+    width: 180px;
     height: 65px;
     color: #D8D8D8;
+    margin: 0 45px;
 }
 
 .category-buttons h1 {
+    font-size: 22px;
     position: fixed;
-    margin-left: 30px;
+    margin-left: 20px;
     margin-top: 24px;
     margin-bottom: 29px;
 }
@@ -93,7 +95,7 @@ a {
 .category-buttons img {
     position: fixed;
     margin-top: 23px;
-    margin-left: 150px;
+    margin-left: 140px;
 }
 
 .category-buttons-active {
@@ -114,6 +116,7 @@ a {
   height: 100%;
   z-index: 1;
   top: 65px;
+  background-color: #FBFAFA;
 }
 
 #wrapper:before {
@@ -126,6 +129,7 @@ a {
   background-position: center top;
   background-clip: border-box;
   background-attachment: fixed;
+  background-color: #FBFAFA;
   z-index: -1;
   width: 100%;
 }
@@ -154,7 +158,13 @@ a {
     height: 1024px;
   }
   #fifi-find-box {
-    top: 492px; /* 1024 / 2 = 512 - (40px / 2 = 20) = 492 */
+    width: 720px;
+    height: 72px;
+    padding-top: 44px;
+    text-align: center;
+    margin: 0 auto;
+    position: relative;
+    /*top: 492px;  1024 / 2 = 512 - (40px / 2 = 20) = 492 */
   }
   .suggestions,
   .suggestions-secondary {
@@ -176,46 +186,80 @@ a {
 }
 
 #fifi-find-box {
-  position: absolute;
-  width: 100%;
+  width: 720px;
+  height: 72px;
+  padding-top: 44px;
   text-align: center;
-  top: 150px;
-  transition: top 0.5s, left 0.5s;
-  -webkit-transition: top 0.5s, left 0.5s;
-  background: #ffffff;
+  margin: 0 auto;
+  position: relative;
+ /* transition: top 0.5s, left 0.5s;
+  -webkit-transition: top 0.5s, left 0.5s;*/
+  background: #FBFAFA;
 }
 
-#fifi-find-box.fifi-find-box-focused {
+/*#fifi-find-box.fifi-find-box-focused {
   top: 75px;
-}
+}*/
 
 #fifi-find {
   font-size: 24px;
-  height: 40px;
+  height: 72px;
   padding-left: 10px;
-  width: 350px;
-  color: #555;
-  background-color: rgba(255,255,255,0.9);
-  border: 1px solid #ddd;
-  border-right: none;
+  width: 720px;
+  color: #424F5A;
+  background-image: url('../images/magglass.png');
+  background-repeat: no-repeat;
+  background-position: 0px 0px;
+  background-color: #f5f5f5;
+  border: 1px solid #E1E1E1;
+  padding: 0 110px 0 82px;
+  /*border-right: none;*/
   margin: 0;
-  border-radius: 2px 0 0 2px;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
   transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
   -webkit-transition: border-color 0.15s ease-in-out 0s, box-shadow 0.15s ease-in-out 0s;
   -moz-box-sizing: border-box;
        box-sizing: border-box;
 }
 
-#fifi-find::-webkit-input-placeholder {
+/*#fifi-find::-webkit-input-placeholder {
   font-family: FontAwesome;
 }
 #fifi-find::-moz-placeholder {
   font-family: FontAwesome;
-}
+}*/
 
 #fifi-find:focus {
-  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset, 0px 0px 8px rgba(102, 175, 233, 0.6);
-  outline: 0px none;
+  background-image: url('../images/magglass.png');
+  background-repeat: no-repeat;
+  background-position: 0px -60px ;
+  background-color: #FCFCFC;
+  border: 1px solid #E1E1E1;
+}
+
+input[type=submit] {
+  -webkit-appearance: none;
+  border-radius: 5px;
+  -moz-border-radius: 5px;
+  -webkit-border-radius: 5px;
+  border:none;
+  width: 100px;
+  height: 66px;
+  background: #E66000;
+  text-align: center;
+  font-size: 22px;
+  color: white;
+  position: absolute;
+  right: 0;
+  z-index: 99;
+  margin: 3px 3px 0 0;
+}
+
+input[type=submit]:active {
+  -webkit-appearance: none;
+  background: #EB9111;
 }
 
 #geolocation {
