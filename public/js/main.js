@@ -15,9 +15,18 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
   nunjucks.configure('/templates', { autoescape: true });
 
+  function toggleVizIcon(){
+      if(searchCategory === "news"){
+          $("#viz-icon").show();
+      } else {
+          $("#viz-icon").hide();
+      }
+  }
 
   /* search category buttons */
   var searchCategory = "news";
+
+  toggleVizIcon();
 
   $( document ).ready(function() {
       $(".category-buttons").click(function(event) {
@@ -29,6 +38,9 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
               $(event.currentTarget).toggleClass("category-buttons-active")
               searchCategory = event.currentTarget.id;
           }
+
+          //enable the visualization icon if in news mode
+          toggleVizIcon();
       });
   });
 
@@ -543,3 +555,6 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
     }
   });
 });
+
+
+

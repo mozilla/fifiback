@@ -25,6 +25,39 @@
     <!-- this is only for the location font and should be optimized away from pulling this all in -->
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/main.css">
+
+    <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+    <!--TODO add this to require in main.js-->
+    <script src="js/lib/d3.min.js"></script>
+
+<script>
+    function showNewsViz(){
+        console.log("called")
+//        $("#wrapper").hide();
+//        $("#boxfishNewsViz").show();
+        document.getElementById("wrapper").style.visibility="hidden";
+        document.getElementById("boxfishNewsViz").style.visibility="visible";
+    }
+</script>
+    <style>
+        #viz-icon {
+            position: absolute;
+            right: 40px;
+            top: 50%;
+            z-index: 999;
+        }
+
+        #boxfishNewsViz {
+            display: hidden;
+            z-index: 999;
+            position: absolute;
+            top: 70px;
+        }
+
+        #wrapper {
+            /*border: 1px solid black;*/
+        }
+    </style>
 </head>
 <body>
 <div id="header">
@@ -42,13 +75,233 @@
     </a>
 </div>
 
+<a href="#" onclick="showNewsViz()"><img id="viz-icon" src="images/viz-icon.png"></a>
     <div id="wrapper">
-    <div id="fifi-find-box">
-      <input type="text" value="" placeholder="&#xF002;" autocomplete="off" id="fifi-find"><button id="geolocation" data-action="geolocation"><i class="icon-location-arrow"></i> <span id="geolocation-name">Location</span></button>
+        <div id="fifi-find-box">
+          <input type="text" value="" placeholder="&#xF002;" autocomplete="off" id="fifi-find"><button id="geolocation" data-action="geolocation"><i class="icon-location-arrow"></i> <span id="geolocation-name">Location</span></button>
+        </div>
+        <div id="suggestions"></div>
+        <div id="details"></div>
     </div>
-    <div id="suggestions"></div>
-    <div id="details"></div>
+
+<!--news viz section-->
+<div id="boxfishNewsViz">
+    <input type="hidden" id="api-key" value="eyJjIjo2MzUxMjcyOTMyMDg2OTAwMDAsInMiOiJHOURjQjdCQ3daYy04eFhRQzMtU2Q4UzJqYzgiLCJpZCI6IlNPQ0RQSDdGZTBDMEhHVHV2UUY5TUEiLCJuIjoieUZmNmpOSE04WUNVM2ciLCJyIjoiSjNocGF2czMxOTBOdUEiLCJrIjoiT0F1dGgifQ" />
+
+    <div class="row-fluid">
+    <div style="float:left">
+        <div class="widget-box">
+            <div class="widget-title">
+                <h5>Television Trends</h5>
+            </div>
+            <div class="widget-content nopadding">
+
+                <fieldset>
+
+                    <div>
+                        <label for="txtStart">Start Date</label>
+                        <div>
+                            <input type="text" id="txtStart"  value="2013-08-22T00:00:00Z">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="txtEnd">End Date</label>
+                        <div>
+                            <input type="text" id="txtEnd"  value="2013-08-23T00:00:00Z">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="selectGranularity">Granularity</label>
+                        <div>
+                            <select id="selectGranularity">
+                                <option value="year">Year</option>
+                                <option value="month">Month</option>
+                                <option value="day" selected>Day</option>
+                                <option value="hour">Hour</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label for="chkRelated">Show Related Terms</label>
+                        <div>
+                            <input type="checkbox" id="chkRelated" checked>
+                        </div>
+                    </div>
+
+                    <div>
+                        <button id="cmdGraph">Graph</button>
+                    </div>
+                </fieldset>
+            </div>
+        </div>
+        <div id="dates"></div>
     </div>
-    <script src="js/require.js" data-main="js/config"></script>
+
+    <div id="container" style="min-height: 600px; float: left;"></div>
+</div>
+</div>
+<script>
+
+    /* news viz code */
+    if ( !Date.prototype.toSimpleISOString ) {
+
+        ( function() {
+
+            function pad(number) {
+                var r = String(number);
+                if ( r.length === 1 ) {
+                    r = '0' + r;
+                }
+                return r;
+            }
+
+            Date.prototype.toSimpleISOString = function() {
+                return this.getUTCFullYear()
+                        + '-' + pad( this.getUTCMonth() + 1 )
+                        + '-' + pad( this.getUTCDate() )
+                        + 'T' + pad( this.getUTCHours() )
+                        + ':' + pad( this.getUTCMinutes() )
+                        + ':' + pad( this.getUTCSeconds() )
+                        + 'Z';
+            };
+
+        }());
+    };
+
+
+    var trendingData = {};
+
+    var diameter = 800,
+            format = d3.format(",d"),
+            color = d3.scale.category20c();
+
+    var bubble = d3.layout.pack()
+            .sort(null)
+            .size([diameter, diameter])
+            .padding(1.5);
+
+    function loadData(date) {
+
+        $("#container").html('');
+
+        var svg = d3
+                .select("#container")
+                .append("svg")
+                .attr("width", diameter)
+                .attr("height", diameter)
+                .attr("class", "bubble");
+
+        var node = svg.selectAll(".node")
+                .data(bubble.nodes(parseData(trendingData, date)).filter(function (d) {
+                    return !d.children;
+                }))
+                .enter().append("g")
+                .attr("class", "node")
+                .attr("transform", function (d) {
+                    return "translate(" + d.x + "," + d.y + ")";
+                });
+
+        node.append("title")
+                .text(function (d) {
+                    return d.className + ": " + format(d.value);
+                });
+
+        node.append("circle")
+                .attr("r", function (d) {
+                    return d.r;
+                })
+                .style("fill", function (d) {
+                    return color(d.packageName);
+                });
+
+        node.append("text")
+                .attr("dy", ".3em")
+                .style("text-anchor", "middle")
+                .text(function (d) {
+                    return d.className.substring(0, d.r / 3);
+                });
+
+        d3.select(self.frameElement).style("height", diameter + "px");
+    }
+
+    // Returns a flattened hierarchy containing all leaf nodes under the root.
+    function parseData(data, date) {
+        var classes = [];
+        $('#dates').html('');
+        var dataForDate = data[0];
+
+        if (typeof date == 'undefined') {
+            $('#date_0').append("<strong>&nbsp;&lt;--</strong>");
+        }
+
+        for (var keywordIndex in data) {
+            var trendName = data[keywordIndex].name;
+            var trendData = data[keywordIndex].metrics;
+
+            for (var trendDateIndex in trendData) {
+                if (((typeof date == 'undefined' || date == null) && trendDateIndex == 0)
+                        || date == trendData[trendDateIndex].time) {
+                    classes.push({packageName: trendName, className: trendName, value: trendData[trendDateIndex].count});
+
+                    if ($('#chkRelated').attr('checked') == 'checked') {
+                        for (var relatedIndex in trendData[trendDateIndex].related) {
+                            var related = trendData[trendDateIndex].related[relatedIndex];
+                            classes.push({packageName: trendName, className: related.name, value: related.count});
+                        }
+                    }
+                }
+            }
+        }
+
+        if (data.length > 0) {
+            for (var dateIndex in data[0].metrics) {
+                // also append dates
+                $('#dates').append("<br /><a style='text-decoration:underline; font-size: 22px; line-height: 36px;' id=\"date_" + dateIndex + "\" onclick=\"loadData('" + data[0].metrics[dateIndex].time + "');\">" + new Date(data[0].metrics[dateIndex].time).toLocaleDateString("en-US") + "</a>");
+
+                if (typeof date != 'undefined' && data[0].metrics[dateIndex].time == date) {
+                    $('#date_' + dateIndex).append("<strong>&nbsp;&lt;&lt;</strong>");
+                }
+            }
+        }
+
+        if (typeof date == 'undefined') {
+            $('#date_0').append("<strong>&nbsp;&lt;&lt;</strong>");
+        }
+
+        return {children: classes};
+    };
+
+    var now = new Date();
+    $("#txtEnd").val(now.toSimpleISOString());
+    $("#txtStart").val(new Date(now - 604800000).toSimpleISOString());
+
+
+    $('#cmdGraph').click(function () {
+
+        // 2013-08-21T23:00:00Z
+
+        var startDate = new Date($("#txtStart").val());
+        var endDate = new Date($("#txtEnd").val());
+        var granularity = $("#selectGranularity").children(":selected").val();
+        var apiKey = $("#api-key").val();
+
+        $.ajax({
+            url: "https://api-staging.boxfish.com/v4/trending/metrics/",
+            data: { start: startDate.toSimpleISOString(), stop: endDate.toSimpleISOString(), granularity: granularity, token: apiKey },
+            traditional: true,
+            success: function (data) {
+                trendingData = data;
+
+                // the first time load the data:
+                loadData();
+            }
+        });
+    });
+
+</script>
+<script src="js/require.js" data-main="js/config"></script>
   </body>
 </html>
