@@ -28,7 +28,8 @@
     "querySet": [
       "twitter.com",
       "bing.com",
-      "boxfish.com"
+      "boxfish.com",
+      "wikipedia.infobox"
     ]
   }
 }

@@ -15,9 +15,11 @@ module.exports = new (require('../Engine'))({
     var latlon = geolocation.split(',');
 
     var url = 'https://user:' + qs.escape(nconf.get('bingKey')) +
-              '@api.datamarket.azure.com/Bing/Search/v1/Web?Query=%27' + qs.escape(term) +
-              '%27&%24top=10&%24format=JSON' +
-              '&Latitude=' + latlon[0] + '&Longitude=' + latlon[1];
+              '@api.datamarket.azure.com/Bing/Search/v1/Web?Query=%27' + qs.escape(term) + '%27&%24top=10&%24format=JSON';
+
+    if(geolocation) {
+        url += '&Latitude=' + latlon[0] + '&Longitude=' + latlon[1];
+    }
 
     request.get({
       url: url

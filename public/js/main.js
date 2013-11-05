@@ -418,9 +418,9 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
           case 'wikipedia.infobox':
               var article = data.result;
-               console.log("found the infobox")
               if (article) {
-                  wrapper.find('#definition-text').html(article);
+//                  wrapper.find('#definition-text').html(article);
+                  wrapper.find('#definition').append(article);
               }
               break;
 

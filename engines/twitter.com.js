@@ -18,8 +18,13 @@ module.exports = new (require('../Engine'))({
   "queryFunc": function (term, location, geolocation) {
     var d = q.defer();
 
-    twitterAuth.fetch('https://api.twitter.com/1.1/search/tweets.json?q=' +
-      term + '&geocode=' + geolocation + ',50mi', nconf.get('twitterToken'),
+    var url = 'https://api.twitter.com/1.1/search/tweets.json?q=' + term;
+
+    if(geolocation){
+        url += '&geocode=' + geolocation + ',50mi';
+    }
+
+    twitterAuth.fetch(url, nconf.get('twitterToken'),
       nconf.get('twitterTokenSecret'), function (err, results) {
 
       if (err) {

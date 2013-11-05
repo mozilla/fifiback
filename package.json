@@ -11,7 +11,8 @@
     "apac": "git://github.com/ednapiranha/node-apac.git",
     "yelp": ">= 0.1.1",
     "twitter-oauth": "*",
-    "node-foursquare": "*"
+    "node-foursquare": "*",
+    "cheerio": "0.12.3"
   },
   "engines": {
     "node": "0.10.x",

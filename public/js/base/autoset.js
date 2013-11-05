@@ -46,6 +46,10 @@ define(['./utils'], function (utils) {
                 'boxfish.com': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
+                },
+                'wikipedia.infobox': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
                 }
             }
         };
