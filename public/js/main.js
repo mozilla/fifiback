@@ -58,8 +58,8 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
         if (value === data.originalTerm) {
           autoset.generateSecondary(value, results, data.engineId, searchCategory, function () {
             nunjucks.render('results_secondary.html', {
-              engineSet: autoset.engines,
-              found: utils.keySize(autoset.engines),
+              engineSet: autoset.engines[searchCategory],
+              found: utils.keySize(autoset.engines[searchCategory]),
               term: data.term
             }, function (err, res) {
               if (err) console.error(err);
@@ -71,8 +71,8 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
         if (value === data.term) {
           autoset.generate(value, results, data.engineId, searchCategory, function () {
             nunjucks.render('results.html', {
-              engineSet: autoset.engines,
-              found: utils.keySize(autoset.engines)
+              engineSet: autoset.engines[searchCategory],
+              found: utils.keySize(autoset.engines[searchCategory])
             }, function (err, res) {
               if (err) {
                 console.error(err);
@@ -477,9 +477,9 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
     if (value.length >= 1) {
       socket.emit('api/find', {
         term: value,
-        location: geo.getLastLocation(),
+        location: '',
         search: searchCategory,
-        geolocation: geo.getLastPosition().coords.latitude + ',' + geo.getLastPosition().coords.longitude
+        geolocation: ''
       });
     }
   });
@@ -494,7 +494,7 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
     wrapper.addClass('fifi-find-box-focused')
            .find('#fifi-find-box')
            .addClass('fifi-find-box-focused');
-    geo.startWatchingPosition(wrapper.find('#geolocation-name'));
+    //geo.startWatchingPosition(wrapper.find('#geolocation-name'));
   });
 
   function goBack() {
@@ -514,9 +514,11 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
   // on N+1 runs, if we've already successfully gotten their location
   // lets just go ahead and grab it again.  there's no real API to know
   // that our site has been granted the location permission
+  /*
   if (geo.haveGeolocationPermission()) {
     geo.startWatchingPosition(wrapper.find('#geolocation-name'));
   }
+  */
 
   function goSearch(term) {
     wrapper.find('#suggestions').hide();
@@ -528,8 +530,8 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
       for (var engine in autoset.engines[searchCategory]) {
       socket.emit('api/query', {
         term: term,
-        location: geo.getLastLocation(),
-        geolocation: geo.getLastPosition().coords.latitude + ',' + geo.getLastPosition().coords.longitude,
+        location: '',
+        geolocation: '',
         engineId: engine,
         search: searchCategory
       });
@@ -551,14 +553,6 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
       case 'back':
         goBack();
-        break;
-
-      case 'geolocation':
-        if (!geo.isWatchingPosition()) {
-          geo.startWatchingPosition(wrapper.find('#geolocation-name'));
-        } else {
-          geo.stopWatchingPosition();
-        }
         break;
     }
   });

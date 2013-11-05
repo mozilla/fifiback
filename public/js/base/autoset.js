@@ -68,7 +68,7 @@ define(['./utils'], function (utils) {
 
           if (!this.results[val] && val.length > 0 && this.engines[search][engineId].conceptsPrimary.length < 3) {
             this.results[val] = true;
-            this.engines[engineId].conceptsPrimary.push({
+            this.engines[search][engineId].conceptsPrimary.push({
               concept: val
             });
           }
@@ -95,7 +95,7 @@ define(['./utils'], function (utils) {
 
           if (!this.results[val] && val.length > 0 && this.engines[search][engineId].conceptsSecondary.length < 3) {
             this.results[val] = true;
-            this.engines[engineId].conceptsSecondary.push({
+            this.engines[search][engineId].conceptsSecondary.push({
               concept: val
             });
           }
