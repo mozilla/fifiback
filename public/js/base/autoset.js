@@ -7,41 +7,53 @@ define(['./utils'], function (utils) {
     this.engineClear = function () {
       this.results = {};
       this.terms = null;
-      this.engines = {
-        'bing.com': {
-          conceptsPrimary: [],
-          conceptsSecondary: []
-        },
-        'amazon.com': {
-          conceptsPrimary: [],
-          conceptsSecondary: []
-        },
-        'yelp.com': {
-          conceptsPrimary: [],
-          conceptsSecondary: []
-        },
-        'en.wikipedia.org': {
-          conceptsPrimary: [],
-          conceptsSecondary: []
-        },
-        'twitter.com': {
-          conceptsPrimary: [],
-          conceptsSecondary: []
-        },
-        'foursquare.com': {
-          conceptsPrimary: [],
-          conceptsSecondary: []
-        },
-        'boxfish.com': {
-          conceptsPrimary: [],
-          conceptsSecondary: []
-        },
-      };
+        this.engines = {
+            'food': {
+                'bing.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'amazon.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'yelp.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'en.wikipedia.org': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'twitter.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'foursquare.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                }
+            },
+            'news': {
+                'bing.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'twitter.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'boxfish.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                }
+            }
+        };
     };
 
     this.engineClear();
 
-    this.generate = function (terms, value, engineId, callback) {
+    this.generate = function (terms, value, engineId, search, callback) {
       if (this.terms === null) {
         this.terms = terms;
       }
@@ -54,7 +66,7 @@ define(['./utils'], function (utils) {
 
           val = val.toString().toLowerCase();
 
-          if (!this.results[val] && val.length > 0 && this.engines[engineId].conceptsPrimary.length < 3) {
+          if (!this.results[val] && val.length > 0 && this.engines[search][engineId].conceptsPrimary.length < 3) {
             this.results[val] = true;
             this.engines[engineId].conceptsPrimary.push({
               concept: val
@@ -68,7 +80,7 @@ define(['./utils'], function (utils) {
       }
     };
 
-    this.generateSecondary = function (terms, value, engineId, callback) {
+    this.generateSecondary = function (terms, value, engineId, search, callback) {
       if (this.terms === null) {
         this.terms = terms;
       }
@@ -81,7 +93,7 @@ define(['./utils'], function (utils) {
 
           val = val.toString().toLowerCase();
 
-          if (!this.results[val] && val.length > 0 && this.engines[engineId].conceptsSecondary.length < 3) {
+          if (!this.results[val] && val.length > 0 && this.engines[search][engineId].conceptsSecondary.length < 3) {
             this.results[val] = true;
             this.engines[engineId].conceptsSecondary.push({
               concept: val

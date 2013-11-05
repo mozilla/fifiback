@@ -5,14 +5,12 @@
     "suggestSet": [
       "bing.com",
       "yelp.com",
-      "amazon.com",
       "en.wikipedia.org"
     ],
 
     "querySet": [
       "yelp.com",
       "foursquare.com",
-      "amazon.com",
       "en.wikipedia.org",
       "twitter.com",
       "bing.com"

@@ -56,7 +56,7 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
     if (!!results) {
       if (data.secondary) {
         if (value === data.originalTerm) {
-          autoset.generateSecondary(value, results, data.engineId, function () {
+          autoset.generateSecondary(value, results, data.engineId, searchCategory, function () {
             nunjucks.render('results_secondary.html', {
               engineSet: autoset.engines,
               found: utils.keySize(autoset.engines),
@@ -69,7 +69,7 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
         }
       } else {
         if (value === data.term) {
-          autoset.generate(value, results, data.engineId, function () {
+          autoset.generate(value, results, data.engineId, searchCategory, function () {
             nunjucks.render('results.html', {
               engineSet: autoset.engines,
               found: utils.keySize(autoset.engines)
@@ -416,6 +416,14 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
           }
           break;
 
+          case 'wikipedia.infobox':
+              var article = data.result;
+               console.log("found the infobox")
+              if (article) {
+                  wrapper.find('#definition-text').html(article);
+              }
+              break;
+
         case 'twitter.com':
           var tweets = data.result;
           var content = wrapper.find('#details-list li[data-engine="' + data.engineId + '"] .content');
@@ -517,7 +525,7 @@ define(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
     // set suggested terms as current
     wrapper.find('#fifi-find').val(term);
 
-    for (var engine in autoset.engines) {
+      for (var engine in autoset.engines[searchCategory]) {
       socket.emit('api/query', {
         term: term,
         location: geo.getLastLocation(),
