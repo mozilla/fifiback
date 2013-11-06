@@ -26,9 +26,47 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/main.css">
 
-    <script src="http://code.jquery.com/jquery-1.8.3.min.js"></script>
+    <script src="http://code.jquery.com/jquery-1.10.2.min.js"></script>
     <!--TODO add this to require in main.js-->
     <script src="js/lib/d3.min.js"></script>
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+            $("#fifi-find").on("focus",function(){
+                var scrollTo = $(this).offset().top - 30;
+                scrollPage(scrollTo, "up");
+            });
+
+            // $("#fifi-find").on("blur",function(){
+            //     var scrollTo = 0;
+            //     scrollPage(scrollTo, "down");
+            // });
+
+            function scrollPage(scrollTo, direction){
+                var bounceOffset;
+
+                if(direction == "up") {
+                    bounceOffset = 20;
+                } else {
+                    bounceOffset = 0;
+                }
+
+                $("body","html").animate({
+                    scrollTop : scrollTo,
+                    easing : "linear"
+                }, 200, function(){
+
+                    // $("body","html").animate({
+                    //   scrollTop : scrollTo,
+                    //   easing : "linear"
+                    // }, 150)
+
+                });
+            }
+
+        });
+    </script>
 
 <script>
     function showNewsViz(){
@@ -70,17 +108,15 @@
     <a id="food" class="category-buttons" href="#">
         <h1>Food</h1><img src="images/bubble.png"/>
     </a>
-    <!-- <a id="local" class="category-buttons" href="#">
-        <h1>Local</h1><img src="images/bubble.png"/>
-    </a> -->
 </div>
 
 <a href="#" onclick="showNewsViz()"><img id="viz-icon" src="images/viz-icon.png"></a>
     <div id="wrapper">
-        <div id="fifi-find-box">
-            <input type="text" value="" placeholder="Looking for something?" autocomplete="off" id="fifi-find">
-            <input type="submit" value="Find">
-        </div>
+    <div id="fifi-find-box">
+        <input type="text" value="" placeholder="Looking for something?" autocomplete="off" id="fifi-find">
+        <input type="submit" value="Find">
+        <!-- <button id="geolocation" data-action="geolocation"><i class="icon-location-arrow"></i> <span id="geolocation-name">Location</span></button> -->
+    </div>
 
         <div id="suggestions"></div>
         <div id="details"></div>
