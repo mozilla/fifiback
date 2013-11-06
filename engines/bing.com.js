@@ -14,14 +14,11 @@ module.exports = new (require('../Engine'))({
     console.log('bing queryFunc: ' + term);
     var latlon = '';
 
-    if (geolocation) {
-      latlon = geolocation.split(',');
-    }
-
     var url = 'https://user:' + qs.escape(nconf.get('bingKey')) +
               '@api.datamarket.azure.com/Bing/Search/v1/Web?Query=%27' + qs.escape(term) + '%27&%24top=10&%24format=JSON';
 
     if(geolocation) {
+        latlon = geolocation.split(',');
         url += '&Latitude=' + latlon[0] + '&Longitude=' + latlon[1];
     }
 

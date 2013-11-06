@@ -13,15 +13,15 @@ define(['./utils'], function (utils) {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 },
-                'amazon.com': {
-                    conceptsPrimary: [],
-                    conceptsSecondary: []
-                },
                 'yelp.com': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 },
-                'en.wikipedia.org': {
+//                'en.wikipedia.org': {
+//                    conceptsPrimary: [],
+//                    conceptsSecondary: []
+//                },
+                'wikipedia.infobox': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 },

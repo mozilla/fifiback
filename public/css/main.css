@@ -410,7 +410,8 @@ input[type=submit]:active {
   line-height: 1.2;
   color: #444;
   background-color: #eee;
-  overflow: hidden;
+
+    word-wrap:break-word
 }
 
 .result-item-fixed-height {
@@ -498,7 +499,7 @@ input[type=submit]:active {
 .result-title {
   font-weight: bold;
   font-size: 100%;
-  white-space: nowrap;
+    word-wrap:break-word
 }
 
 .result-title,
@@ -507,11 +508,12 @@ input[type=submit]:active {
   padding: 0 10px;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+    word-wrap:break-word
 }
 
 .result-snippet {
-  white-space: nowrap;
+  /*white-space: nowrap;*/
+  word-wrap:break-word
 }
 
 .icon {
