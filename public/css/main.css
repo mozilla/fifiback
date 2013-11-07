@@ -28,6 +28,12 @@ article, aside, details, figcaption, figure,
 footer, header, hgroup, menu, nav, section {
     display: block;
 }
+
+@font-face {
+  font-family: OpenSans;
+  src: url('OpenSans-Regular.ttf');
+}
+
 body {
     line-height: 1;
     background-color: #F0F0F0;
@@ -53,12 +59,14 @@ table {
 }
 
 h1, p, span {
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: OpenSans;
 }
 
 a {
   color: #2518B5;
 }
+
+
 
 /* apply a natural box layout model to all elements */
 *, *:before, *:after {
@@ -111,7 +119,7 @@ input:focus {
   font-size: 22px;
   position: fixed;
   margin-left: 20px;
-  margin-top: 24px;
+  margin-top: 22px;
   margin-bottom: 29px;
 }
 
@@ -157,6 +165,7 @@ input:focus {
   background-color: #FBFAFA;
   z-index: -1;
   width: 100%;
+  height: 100%;
 }
 /*
 #wrapper.fifi-find-box-focused:before {
@@ -325,23 +334,28 @@ input[type=submit]:active {
 }
 
 #details {
-  width: 720px;
-  margin: 40px auto;
-  height: 152px;
-  outline: 1px solid black;
+  width: 1024px;
+  height: 100%;
+  margin: 80px auto;
+  /*outline: 1px solid black;*/
 }
 
 .fifi-suggest {
-  text-align: center;
+  width: 740px;
+  height: 152px;
+  text-align: left;
   margin-top: 80px;
-  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  /*outline: 1px solid red;*/
 }
 
 .suggestions,
 .suggestions-secondary {
-  background-color: #fff;
-  margin: 0 auto;
-  width: 505px;
+  display: inline;
+ /* margin: 0 auto;*/
+  min-width: 96px;
+  height: 60px;
 }
 
 .suggestions-secondary .secondary.term span {
@@ -350,68 +364,72 @@ input[type=submit]:active {
 
 .suggestions .primary,
 .suggestions-secondary .secondary {
-  background-color: #f1f1f1;
+  position: relative;
+  min-width: 96px;
+  height: 60px;
   display: block;
   float: left;
-  margin: 2px;
-  padding: 3px;
-  position: relative;
-  width: 158px;
+  padding: 18px 20px 0 20px;
+  margin: 0 10px 16px 10px;
+  border-radius: 5px;
+  background: #FBFAF9;
+  border: 1px solid #D4DDE4;
 }
 
 .suggestions .primary span,
 .suggestions-secondary .secondary span {
-  color: #444;
+  color: #6A7B86;
   overflow: hidden;
-  padding: 5px;
+  /*padding: 5px;*/
   font-size: 22px;
   line-height: 23px;
 }
 
+.suggestions .primary:active {
+  border-radius: 5px;
+  background: #F0F0F0;
+  border: 1px solid #D4DDE4;
+
+}
+
 #definition {
-  /*vertical-align: top;
-  display: inline-block;*/
-  margin: 30px auto;
-  
-/*width: 300px;
+  vertical-align: top;
+  display: inline-block;
+  width: 300px;
   height: 600px;
-  background-color: #eee;*/
+  background-color: #eee;
+  margin: 30px auto;
+}
+
+#definition ul{
+  list-style: none;
 }
 
 .infobox {
-    position:relative;
-    left:40px;
-    border: 1px solid #aaa;
-    background-color: #f9f9f9;
-    color: black;
-    /*margin: 0.5em 0 0.5em 1em;*/
-    padding: 0.2em;
-    float: left;
-    clear: right;
-    text-align: left;
-    font-size: 88%;
-    line-height: 1.5em;
+  border-radius: 5px;
+  background: #FBFAF9;
+  border: 1px solid #D4DDE4;
 }
 
 .left, .right {
-  border: 1px solid red;
+  outline: 1px solid red;
   float: left;
   min-width: 320px;
-  margin: 30px 0 0 0;
+  /*margin: 30px 0 0 0;*/
 }
 
 .left {
-  display: block;
-  position: relative;
+/*  display: block;
+  position: relative;*/
   width: 320px;
-  margin: 0 12px 0 20px;
+/*  margin: 0 12px 0 20px;*/
 }
 
 .right {
-  display: block;
-  position: relative;
+  /*display: block;
+  position: relative;*/
   width: 655px;
-  margin: 0 20px 0 12px;
+/*  margin: 0 20px 0 12px;*/
 }
 
 #details-list li {
@@ -423,11 +441,11 @@ input[type=submit]:active {
 }
 
 #definition-text {
-  max-height: 300px;
+/*  max-height: 300px;
   padding: 15px;
   overflow: hidden;
   margin-bottom: 10px;
-  line-height: 20px;
+  line-height: 20px;*/
 }
 
 #definition-text p {
@@ -443,7 +461,7 @@ input[type=submit]:active {
 }
 
 .result-item {
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: OpenSans;
   font-size: 90%;
   margin-top: 1px;
   line-height: 1.2;
@@ -459,7 +477,7 @@ input[type=submit]:active {
 
 .result-header {
   position: relative;
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: OpenSans;
   height: 200px;
   background-size: cover;
   background-repeat: no-repeat;
