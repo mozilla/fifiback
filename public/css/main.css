@@ -320,14 +320,14 @@ input[type=submit]:active {
 }
 
 #suggestions {
-  margin: 0 20px;
-  padding-top: 54px;
+/*  margin: 0 20px;
+  padding-top: 54px;*/
 }
 
 #details {
-  width: 960px;
+  width: 720px;
   margin: 40px auto;
-  height: 100px;
+  height: 152px;
   outline: 1px solid black;
 }
 
