@@ -66,7 +66,9 @@ a {
   color: #2518B5;
 }
 
-
+.content {
+  background-color: #FBFAFA;
+}
 
 /* apply a natural box layout model to all elements */
 *, *:before, *:after {
@@ -398,7 +400,7 @@ input[type=submit]:active {
   width: 300px;
   height: 600px;
   background-color: #eee;
-  margin: 30px auto;
+  /*margin: 30px auto;*/
 }
 
 #definition ul{
@@ -412,7 +414,7 @@ input[type=submit]:active {
 }
 
 .left, .right {
-  outline: 1px solid red;
+  /*outline: 1px solid red;*/
   float: left;
   min-width: 320px;
   /*margin: 30px 0 0 0;*/
@@ -441,6 +443,7 @@ input[type=submit]:active {
 }
 
 #definition-text {
+  width: 300px;
 /*  max-height: 300px;
   padding: 15px;
   overflow: hidden;
@@ -461,18 +464,22 @@ input[type=submit]:active {
 }
 
 .result-item {
+  margin: 5px;
+  padding: 20px;
   font-family: OpenSans;
-  font-size: 90%;
+  font-size: 14px;
   margin-top: 1px;
-  line-height: 1.2;
-  color: #444;
-  background-color: #eee;
+  line-height: 16px;
+  color: black;
+  border-radius: 5px;
+  background: #FBFAF9;
+  border: 1px solid #D4DDE4;
 
     word-wrap:break-word
 }
 
 .result-item-fixed-height {
-  height: 100px;
+  /*height: 100px;*/
 }
 
 .result-header {
@@ -562,7 +569,7 @@ input[type=submit]:active {
 .result-title,
 .result-reviews,
 .result-price {
-  padding: 0 10px;
+  /*padding: 0 0 10px 0;*/
   overflow: hidden;
   text-overflow: ellipsis;
     word-wrap:break-word
@@ -634,13 +641,13 @@ input[type=submit]:active {
 }
 
 .result-tweet {
-  padding: 20px;
+  /*padding: 20px;*/
 }
 
 .result-tweet-user-info {
   display: inline-block;
   vertical-align: top;
-  font-size: 110%;
+/*  font-size: 110%;*/
 }
 
 .result-tweet-user-name,
@@ -649,12 +656,12 @@ input[type=submit]:active {
 }
 
 .result-tweet-user-screen-name {
-  color: #BEBEBE;
+  color: #898989;
 }
 
 .result-tweet-user-screen-name:before {
   content: "@";
-  color: #BEBEBE;
+  color: #898989;
 }
 
 .result-tweet-text {
@@ -662,12 +669,14 @@ input[type=submit]:active {
 }
 
 .result-tweet-time-ago {
-  color: #BEBEBE;
+  color: #898989;
   display: inline-block;
+  font-size: 12px;
+
 }
 
 .icon-twitter {
-  color: #BEBEBE;
+  color: #55ACEE;
   float: right;
 }
 

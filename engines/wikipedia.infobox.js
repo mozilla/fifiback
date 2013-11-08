@@ -5,7 +5,7 @@ var nconf = require('nconf');
 var request = require('request');
 nconf.argv().env().file({ file: 'local.json' });
 
-var wikipediaInfoCardTable = "<table class='infobox vcard' cellspacing='3' style='border-spacing:3px;width:22em;width:26em;'>";
+var wikipediaInfoCardTable = "<table class='infobox vcard' cellspacing='3'>";
 
 module.exports = new (require('../Engine'))({
     "id": "wikipedia.infobox",
