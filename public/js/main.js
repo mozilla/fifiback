@@ -490,7 +490,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                 console.log("ERROR: no wiki card")
                             } else {
                                 $("#grid-wrapper #columns").prepend(
-                                    $('<div class="wikipedia-info-card"/>').append( article )
+                                    $('<div class="wikipedia-info-card"><img class="infobox-wiki-icon" src="images/wikipedia-16x16.png"/>').append( article).append("</div>")
                                 );
                             }
                         }
@@ -694,6 +694,10 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
         $(".boxfish-logo-menu").click(function(){
             $(".boxfish-card").toggle();
+        });
+
+        $(".wiki-logo-menu").click(function(){
+            $(".wikipedia-info-card").toggle();
         });
 
 
