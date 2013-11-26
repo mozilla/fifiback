@@ -136,6 +136,9 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                     return;
                 }
 
+                //open the left menu to show search providers
+                openLeftMenu();
+
                 // ignore the wikipedia entry for now
                 if (data.engineId !== 'en.wikipedia.org') {
                     $('#details-list').append(res);
@@ -153,8 +156,8 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                             if (data.result.channels) {
                                 data.result.channels.forEach(function (item, index, list) {
                                     $("#grid-wrapper #columns").append(
-                                        $('<div class="card"/>').append(
-                                            $('<a class="result-title"/>').html(item.name),
+                                        $('<div class="card boxfish-card"/>').append(
+                                            $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html(item.name),
                                             $('<p class="result-snippet"/>').html(item.number)
                                         )
                                     )
@@ -164,9 +167,9 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                             if (data.result.mentions) {
                                 data.result.mentions.forEach(function (item, index, list) {
                                     $("#grid-wrapper #columns").append(
-                                        $('<div class="card"/>').append(
-                                            "<p>Mentioned on ...</p>",
-                                            $('<a class="result-title"/>').html(item.program.name),
+                                        $('<div class="card boxfish-card"/>').append(
+//                                            "<p>Mentioned on ...</p>",
+                                            $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html(item.program.name),
                                             $('<p class="result-snippet"/>').html(item.text)
                                         )
                                     )
@@ -176,8 +179,8 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                             if (data.result.programs) {
                                 data.result.programs.forEach(function (item, index, list) {
                                     $("#grid-wrapper #columns").append(
-                                        $('<div class="card"/>').append(
-                                            $('<a class="result-title"/>').html(item.name),
+                                        $('<div class="card boxfish-card"/>').append(
+                                            $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html(item.name),
                                             $('<p class="result-snippet"/>').html(item.description)
                                         )
                                     )
@@ -207,8 +210,8 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 //                                    )
 
                                 $("#grid-wrapper #columns").append(
-                                    $('<div class="card"/>').append(
-                                        $('<a class="result-title"/>').html(item.Title).attr('href', item.Url),
+                                    $('<div class="card bing-card"/>').append(
+                                        $('<img src="images/bing-favicon.png"/><a class="result-title"/>').html(item.Title).attr('href', item.Url),
                                         $('<p class="result-snippet"/>').html(item.Description)
                                     )
                                 );
@@ -501,8 +504,8 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                             // https://twitter.com/logo#twitter-content
                             tweets.statuses.slice(0, Math.min(3, tweets.statuses.length)).forEach(function (item) {
                                 $("#grid-wrapper #columns").append(
-                                    $('<div class="card"/>').append(
-                                        $('<div class="result-tweet"/>').append(
+                                    $('<div class="card twitter-card"/>').append(
+                                        $('<img src="images/twitter16x16.png"/><div class="result-tweet"/>').append(
                                             $('<div class="result-tweet-user-info"/>').append(
                                                 $('<span class="result-tweet-user-name"/>').text(item.user.name + " "),
                                                 $('<span class="result-tweet-user-screen-name"/>').text(item.user.screen_name)
@@ -663,6 +666,36 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
             }
         });
+
+
+        /**********************************************/
+        /* Left Slide menu */
+        /**********************************************/
+
+        function openLeftMenu() {
+            $("#leftMenu").addClass( 'left-menu-open' );
+        }
+
+        function closeLeftMenu(){
+            $("#leftMenu").removeClass( 'left-menu-open' );
+        }
+
+        $(".twitter-logo-menu").click(function(){
+           $(".twitter-card").toggle();
+        });
+
+        $(".bing-logo-menu").click(function(){
+            $(".bing-card").toggle();
+        });
+
+        $(".google-logo-menu").click(function(){
+            $(".google-card").toggle();
+        });
+
+        $(".boxfish-logo-menu").click(function(){
+            $(".boxfish-card").toggle();
+        });
+
 
 
         /*********************************************/

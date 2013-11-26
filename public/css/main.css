@@ -65,7 +65,7 @@ body { min-width: 750px; }
 /* search category button - default state */
 #search-category .search-category-button {
     background-color:#F0F0F0;
-    color: white;
+    color: black;
     vertical-align: top;
 }
 
@@ -206,6 +206,7 @@ input[type=submit]:active {
 }
 
 .card {
+    position: relative;
     font-family: OpenSans;
     height: 275px;
     display: inline-block;
@@ -250,8 +251,6 @@ input[type=submit]:active {
 }
 
 .card img {
-    width: 100%;
-    border-bottom: 1px solid #ccc;
     padding-bottom: 10px;
     margin-bottom: 5px;
 }
@@ -261,6 +260,14 @@ input[type=submit]:active {
     color: #333;
     margin: 0;
 }
+
+/*.card-logo {*/
+/*position: absolute;*/
+/*top: 0px;*/
+/*left: 0px;*/
+/*width: 16px !important;*/
+/*height: 16px !important;*/
+/*}*/
 
 /* @media (min-width: 320px) {
     #columns {
@@ -310,4 +317,69 @@ input[type=submit]:active {
     /*TODO figure out a better way to get the width from the wikipedia infobox table. The width is
     set in em, but after we append it to the div we're not getting the effect of it being set on the table*/
     width: 285px !important;
+}
+
+
+/****************************************/
+/* left menu                            */
+/****************************************/
+
+.leftSlideMenu {
+    /*background: #47a3da;*/
+    position: fixed;
+    font-family: OpenSans;
+}
+
+/*.leftSlideMenu h3 {*/
+    /*color: #afdefa;*/
+    /*font-size: 1.9em;*/
+    /*padding: 20px;*/
+    /*margin: 0;*/
+    /*font-weight: 300;*/
+    /*background: #0d77b6;*/
+/*}*/
+
+.leftSlideMenu a {
+    display: block;
+    font-size: 1.1em;
+    font-weight: 300;
+}
+
+/*.leftSlideMenu a:hover {*/
+    /*background: #258ecd;*/
+/*}*/
+
+/*.leftSlideMenu a:active {*/
+    /*background: #afdefa;*/
+    /*color: #47a3da;*/
+/*}*/
+
+.leftSlideMenu-vertical {
+    width: 120px;
+    height: 100%;
+    top: 0;
+    z-index: 1000;
+}
+
+.leftSlideMenu-vertical a {
+    border-bottom: 1px solid #D4DDE4;
+    padding: 1em;
+}
+
+/* Vertical menu that slides from the left */
+
+.menu-left {
+    left: -120px;
+}
+
+.menu-left.left-menu-open {
+    left: 0px;
+}
+
+/* Transitions */
+
+.leftSlideMenu {
+    -webkit-transition: all 0.3s ease;
+    -moz-transition: all 0.3s ease;
+    transition: all 0.3s ease;
 }
