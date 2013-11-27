@@ -395,6 +395,6 @@ input[type=submit]:active {
 }
 
 .search-logo {
-    /*width: 45px;*/
-    /*height: 45px;*/
+    width: 45px;
+    height: 45px;
 }
