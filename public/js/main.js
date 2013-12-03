@@ -44,8 +44,104 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
         /* End Polyfills */
         /*********************************************************/
 
-//        var wrapper = $('#wrapper');
-        var find = $('#fifi-find');
+
+        /*********************************************************/
+        /* Local Storage to store search preferences */
+        /*********************************************************/
+        var host = location.hostname;
+        var myLocalStorage = localStorage; // firefox 3.5+
+        var localStoragePrefsString = "fifiSearchPreferences";
+
+        var fifiSearchPreferences = {
+            "web": {
+                "bing.com": true,
+                "twitter.com": true,
+                "wikipedia.infobox": true,
+                "boxfish.com": true
+            },
+            "news": {
+                "bing.com": true,
+                "twitter.com": true,
+                "wikipedia.infobox": true,
+                "boxfish.com": true
+            },
+            "food": {
+                "bing.com": true,
+                "yelp.com": true,
+                "wikipedia.infobox": true,
+                "twitter.com": true,
+                "foursqure.com": true
+            },
+            "local": {
+                "bing.com": true,
+                "twitter.com": true,
+                "yelp.com": true,
+                "foursquare.com": true
+            },
+            "apps": {
+                "bing.com": true,
+                "twitter.com": true
+            }
+        }
+
+        //check for pre-existing prefs
+        if (localStorage.getItem(localStoragePrefsString) != null) {
+            console.log("found existing preferences")
+            fifiSearchPreferences = JSON.parse(myLocalStorage.getItem(localStoragePrefsString));
+
+            $(document).ready(function () {
+                //go through the stored settings, find the disabled search providers and add providerInactive css class (once the DOM is ready of course)
+                for(var searchCat in fifiSearchPreferences){
+                    for(var provider in fifiSearchPreferences[searchCat]){
+                        //get the boolean state for the search provider (turned on or off)
+                        var state = fifiSearchPreferences[searchCat][provider];
+                        if(!state){
+                            //the provider was disabled by the user, update the CSS
+                            var dataAttrs = "[data-category='"+searchCat+"'][data-provider='"+provider+"']";
+                            $(dataAttrs).addClass("providerInactive");
+                        }
+                    }
+                }
+            });
+        }
+
+        function saveFifiSearchPreferences(){
+            myLocalStorage.setItem(localStoragePrefsString, JSON.stringify(fifiSearchPreferences));
+
+            console.log(JSON.parse(myLocalStorage.getItem(localStoragePrefsString)));
+        }
+
+        function toggleProviderStatus(category,provider){
+            //invert whatever boolean value we previously had
+            fifiSearchPreferences[category][provider] = !fifiSearchPreferences[category][provider];
+
+            saveFifiSearchPreferences();
+        }
+
+//        function writeLocal() {
+//            var data = $('text').value;
+//            var itemName = $('item_name').value;
+//            myLocalStorage.setItem(itemName, data);
+//            updateItemsList();
+//        }
+//
+//        function deleteLocal(itemName) {
+//            myLocalStorage.removeItem(itemName);
+//            updateItemsList();
+//        }
+//
+//        function readLocal(itemName) {
+//            $('item_name').value=itemName;
+//            $('text').value=myLocalStorage.getItem(itemName);
+//        }
+        /*********************************************************/
+        /* end Local Storage                                     */
+        /*********************************************************/
+
+        var find = $("#fifi-find");
+        var gridwrapper = $("#grid-wrapper");
+        var gridwrapper_columns = $("#grid-wrapper #columns");
+        var suggestions = $("#suggestions");
 
         var inResults = false;
         var socketUrl = settings.SOCKET_URL;
@@ -65,13 +161,24 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
         }
 
         /* search category buttons */
-        var searchCategory = "news";
+        var searchCategory = "web";
+        var searchCategories = ["web", "news", "food", "local", "apps"];
 
-        //toggleVizIcon();
 
+
+        //toggle what search categories will show based on the category buttons at top of screen
         $(document).ready(function () {
             $(".search-category-button").click(function (event) {
                 searchCategory = $(event.currentTarget).data().category;
+                console.log("changed search category: " + searchCategory);
+                $("."+searchCategory).show();
+
+                //hide the other search providers on the left
+                searchCategories.forEach(function(value){
+                    if(value != searchCategory){
+                        $("."+value).hide();
+                    }
+                });
             });
         });
 
@@ -155,8 +262,8 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                         if (data.result) {
                             if (data.result.channels) {
                                 data.result.channels.forEach(function (item, index, list) {
-                                    $("#grid-wrapper #columns").append(
-                                        $('<div class="card boxfish-card"/>').append(
+                                    gridwrapper_columns.append(
+                                        $('<div data-cardtype="boxfish.com" class="card"/>').append(
                                             $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html(item.name),
                                             $('<p class="result-snippet"/>').html(item.number)
                                         )
@@ -166,8 +273,8 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
                             if (data.result.mentions) {
                                 data.result.mentions.forEach(function (item, index, list) {
-                                    $("#grid-wrapper #columns").append(
-                                        $('<div class="card boxfish-card"/>').append(
+                                    gridwrapper_columns.append(
+                                        $('<div data-cardtype="boxfish.com" class="card"/>').append(
 //                                            "<p>Mentioned on ...</p>",
                                             $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html(item.program.name),
                                             $('<p class="result-snippet"/>').html(item.text)
@@ -178,8 +285,8 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
                             if (data.result.programs) {
                                 data.result.programs.forEach(function (item, index, list) {
-                                    $("#grid-wrapper #columns").append(
-                                        $('<div class="card boxfish-card"/>').append(
+                                    gridwrapper_columns.append(
+                                        $('<div data-cardtype="boxfish.com" class="card"/>').append(
                                             $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html(item.name),
                                             $('<p class="result-snippet"/>').html(item.description)
                                         )
@@ -209,8 +316,8 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 //                                        $('<p class="result-snippet"/>').html(item.Description)
 //                                    )
 
-                                $("#grid-wrapper #columns").append(
-                                    $('<div class="card bing-card"/>').append(
+                                gridwrapper_columns.append(
+                                    $('<div data-cardtype="bing.com" class="card"/>').append(
                                         $('<img src="images/bing-favicon.png"/><a class="result-title"/>').html(item.Title).attr('href', item.Url),
                                         $('<p class="result-snippet"/>').html(item.Description)
                                     )
@@ -489,8 +596,9 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                             if($(article)[0] && $(article)[0].data == "null"){
                                 console.log("ERROR: no wiki card")
                             } else {
-                                $("#grid-wrapper #columns").prepend(
-                                    $('<div class="wikipedia-info-card"><img class="infobox-wiki-icon" src="images/wikipedia-16x16.png"/>').append( article).append("</div>")
+                                console.log(article)
+                                gridwrapper_columns.prepend(
+                                    $('<div data-cardtype="wikipedia.infobox" class="wikipedia-info-card">').append( article).append("</div>")
                                 );
                             }
                         }
@@ -503,8 +611,8 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                         if (tweets) {
                             // https://twitter.com/logo#twitter-content
                             tweets.statuses.slice(0, Math.min(3, tweets.statuses.length)).forEach(function (item) {
-                                $("#grid-wrapper #columns").append(
-                                    $('<div class="card twitter-card"/>').append(
+                                gridwrapper_columns.append(
+                                    $('<div data-cardtype="twitter.com" class="card"/>').append(
                                         $('<img src="images/twitter16x16.png"/><div class="result-tweet"/>').append(
                                             $('<div class="result-tweet-user-info"/>').append(
                                                 $('<span class="result-tweet-user-name"/>').text(item.user.name + " "),
@@ -550,7 +658,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
         // Load initial search template
         nunjucks.render('suggest.html', function (err, res) {
-            $('#suggestions').html(res);
+            suggestions.html(res);
         });
 
         find.get(0).addEventListener('input', function (ev) {
@@ -583,26 +691,33 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
             }
         });
 
-        $('#fifi-find').one('focus', function () {
-            $('#fifi-find').addClass('fifi-find-box-focused')
+        find.one('focus', function () {
+            find.addClass('fifi-find-box-focused')
                 .find('#fifi-find-box')
                 .addClass('fifi-find-box-focused');
             geo.startWatchingPosition($('#geolocation-name'));
         });
 
         function goBack() {
-            $('#grid-wrapper').hide();
-            $('#grid-wrapper #columns').empty();
-            $('#suggestions').show();
+            gridwrapper.hide();
+            gridwrapper_columns.empty();
+            closeLeftMenu();
+            suggestions.show();
             // reset original search terms
-            $('#fifi-find').val(lastTerm);
+            find.val(lastTerm);
             inResults = false;
         }
 
-        $('#fifi-find').on('focus', function () {
+        find.on('focus', function () {
             if (inResults) {
                 goBack();
             }
+        });
+
+        $("#fifi-find-submit").on('click', function(){
+            gridwrapper.hide();
+            gridwrapper_columns.empty();
+            goSearch(find.val());
         });
 
         // on N+1 runs, if we've already successfully gotten their location
@@ -615,25 +730,29 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
 
         function goSearch(term) {
-            $('#suggestions').hide();
+            suggestions.hide();
 
-            $("#grid-wrapper").show();
+            gridwrapper.show();
 
             // save the current terms
-            lastTerm = $('#fifi-find').val();
+            lastTerm = find.val();
             // set suggested terms as current
-            $('#fifi-find').val(term);
+            find.val(term);
 
             for (var engine in autoset.engines[searchCategory]) {
-                socket.emit('api/query', {
-                    term: term,
+                if(fifiSearchPreferences[searchCategory][engine]){
+                    //only search an engine if it's currently enabled
+                    //check for side filtering
+                    socket.emit('api/query', {
+                        term: term,
 //                    location: geo.getLastLocation(),
 //                    geolocation: geo.getLastPosition().coords.latitude + ',' + geo.getLastPosition().coords.longitude,
-                    location: '',
-                    geolocation: '',
-                    engineId: engine,
-                    search: searchCategory
-                });
+                        location: '',
+                        geolocation: '',
+                        engineId: engine,
+                        search: searchCategory
+                    });
+                }
             }
 
             inResults = true;
@@ -643,7 +762,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 //            });
         }
 
-        $("#suggestions").on('touchstart click', function (ev) {
+        suggestions.on('touchstart click', function (ev) {
             var self = $(ev.target);
 
             switch (self.data('action')) {
@@ -680,26 +799,21 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
             $("#leftMenu").removeClass( 'left-menu-open' );
         }
 
-        $(".twitter-logo-menu").click(function(){
-           $(".twitter-card").toggle();
-        });
+        //handle clicks on the search provider icons in the left menu
+        $(".provider").on('click', function(){
+            //hide the cards from this search provider in the grid
+            if($(this).hasClass("providerInactive")){
+                $("[data-cardtype='" + $(this).data('provider') + "']").removeClass("providerInactive");
+            } else {
+                $("[data-cardtype='" + $(this).data('provider') + "']").addClass("providerInactive");
+            }
 
-        $(".bing-logo-menu").click(function(){
-            $(".bing-card").toggle();
-        });
+            //save the settings in localStorage
+            toggleProviderStatus($(this).data('category'), $(this).data('provider'))
 
-        $(".google-logo-menu").click(function(){
-            $(".google-card").toggle();
+            //grey out the icon to indicate inactive or return to normal state
+            $(this).toggleClass("providerInactive");
         });
-
-        $(".boxfish-logo-menu").click(function(){
-            $(".boxfish-card").toggle();
-        });
-
-        $(".wiki-logo-menu").click(function(){
-            $(".wikipedia-info-card").toggle();
-        });
-
 
 
         /*********************************************/
@@ -707,12 +821,12 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
         /*********************************************/
         $(document).ready(function () {
 
-            $("#fifi-find").on("focus", function () {
+            find.on("focus", function () {
                 var scrollTo = $(this).offset().top - 30;
                 scrollPage(scrollTo, "up");
             });
 
-            // $("#fifi-find").on("blur",function(){
+            // find.on("blur",function(){
             //     var scrollTo = 0;
             //     scrollPage(scrollTo, "down");
             // });
@@ -748,142 +862,6 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
             document.getElementById("wrapper").style.visibility = "hidden";
             document.getElementById("boxfishNewsViz").style.visibility = "visible";
         }
-
-
-        /**********************************************/
-        /* Boxfish code */
-        /**********************************************/
-
-//        var trendingData = {};
-//
-//        var diameter = 800,
-//            format = d3.format(",d"),
-//            color = d3.scale.category20c();
-//
-//        var bubble = d3.layout.pack()
-//            .sort(null)
-//            .size([diameter, diameter])
-//            .padding(1.5);
-//
-//        function loadData(date) {
-//
-//            $("#container").html('');
-//
-//            var svg = d3
-//                .select("#container")
-//                .append("svg")
-//                .attr("width", diameter)
-//                .attr("height", diameter)
-//                .attr("class", "bubble");
-//
-//            var node = svg.selectAll(".node")
-//                .data(bubble.nodes(parseData(trendingData, date)).filter(function (d) {
-//                    return !d.children;
-//                }))
-//                .enter().append("g")
-//                .attr("class", "node")
-//                .attr("transform", function (d) {
-//                    return "translate(" + d.x + "," + d.y + ")";
-//                });
-//
-//            node.append("title")
-//                .text(function (d) {
-//                    return d.className + ": " + format(d.value);
-//                });
-//
-//            node.append("circle")
-//                .attr("r", function (d) {
-//                    return d.r;
-//                })
-//                .style("fill", function (d) {
-//                    return color(d.packageName);
-//                });
-//
-//            node.append("text")
-//                .attr("dy", ".3em")
-//                .style("text-anchor", "middle")
-//                .text(function (d) {
-//                    return d.className.substring(0, d.r / 3);
-//                });
-//
-//            d3.select(self.frameElement).style("height", diameter + "px");
-//        }
-//
-//        // Returns a flattened hierarchy containing all leaf nodes under the root.
-//        function parseData(data, date) {
-//            var classes = [];
-//            $('#dates').html('');
-//            var dataForDate = data[0];
-//
-//            if (typeof date == 'undefined') {
-//                $('#date_0').append("<strong>&nbsp;&lt;--</strong>");
-//            }
-//
-//            for (var keywordIndex in data) {
-//                var trendName = data[keywordIndex].name;
-//                var trendData = data[keywordIndex].metrics;
-//
-//                for (var trendDateIndex in trendData) {
-//                    if (((typeof date == 'undefined' || date == null) && trendDateIndex == 0)
-//                        || date == trendData[trendDateIndex].time) {
-//                        classes.push({packageName: trendName, className: trendName, value: trendData[trendDateIndex].count});
-//
-//                        if ($('#chkRelated').attr('checked') == 'checked') {
-//                            for (var relatedIndex in trendData[trendDateIndex].related) {
-//                                var related = trendData[trendDateIndex].related[relatedIndex];
-//                                classes.push({packageName: trendName, className: related.name, value: related.count});
-//                            }
-//                        }
-//                    }
-//                }
-//            }
-//
-//            if (data.length > 0) {
-//                for (var dateIndex in data[0].metrics) {
-//                    // also append dates
-//                    $('#dates').append("<br /><a style='text-decoration:underline; font-size: 22px; line-height: 36px;' id=\"date_" + dateIndex + "\" onclick=\"loadData('" + data[0].metrics[dateIndex].time + "');\">" + new Date(data[0].metrics[dateIndex].time).toLocaleDateString("en-US") + "</a>");
-//
-//                    if (typeof date != 'undefined' && data[0].metrics[dateIndex].time == date) {
-//                        $('#date_' + dateIndex).append("<strong>&nbsp;&lt;&lt;</strong>");
-//                    }
-//                }
-//            }
-//
-//            if (typeof date == 'undefined') {
-//                $('#date_0').append("<strong>&nbsp;&lt;&lt;</strong>");
-//            }
-//
-//            return {children: classes};
-//        }
-//        ;
-//
-//        var now = new Date();
-//        $("#txtEnd").val(now.toSimpleISOString());
-//        $("#txtStart").val(new Date(now - 604800000).toSimpleISOString());
-//
-//
-//        $('#cmdGraph').click(function () {
-//
-//            // 2013-08-21T23:00:00Z
-//
-//            var startDate = new Date($("#txtStart").val());
-//            var endDate = new Date($("#txtEnd").val());
-//            var granularity = $("#selectGranularity").children(":selected").val();
-//            var apiKey = $("#api-key").val();
-//
-//            $.ajax({
-//                url: "https://api-staging.boxfish.com/v4/trending/metrics/",
-//                data: { start: startDate.toSimpleISOString(), stop: endDate.toSimpleISOString(), granularity: granularity, token: apiKey },
-//                traditional: true,
-//                success: function (data) {
-//                    trendingData = data;
-//
-//                    // the first time load the data:
-//                    loadData();
-//                }
-//            });
-//        });
-
     });
 /* end function require pass params */
 

@@ -7,19 +7,38 @@
 </head>
 <body>
     <nav class="leftSlideMenu leftSlideMenu-vertical menu-left" id="leftMenu">
-        <!--<h3>Menu</h3>-->
-        <a href="#"><img src="images/bing-logo.png" class="search-logo bing-logo-menu"/></a>
-        <a href="#"><img src="images/twitterlogo.png" class="search-logo  twitter-logo-menu"/></a>
-        <a href="#"><img src="images/boxfish-logo.png" class="search-logo boxfish-logo-menu"/></a>
-        <a href="#"><img src="images/wiki-logo.png" class="search-logo wiki-logo-menu"/></a>
+        <!-- Web -->
+        <a href="#" ><img data-category="web" data-provider="bing.com" class="provider web bing.com" src="images/bing-logo.png"/></a>
+        <a href="#" ><img data-category="web" data-provider="twitter.com" class="provider web twitter.com" src="images/twitterlogo.png"/></a>
+        <a href="#" ><img data-category="web" data-provider="boxfish.com" class="provider web boxfish.com" src="images/boxfish-logo.png"/></a>
+        <a href="#" ><img data-category="web" data-provider="wikipedia.infobox" class="provider web wikipedia.infobox" src="images/wiki-logo.png"/></a>
+        <!-- News -->
+        <a href="#" ><img data-category="news" data-provider="bing.com" class="provider news bing.com" src="images/bing-logo.png"/></a>
+        <a href="#" ><img data-category="news" data-provider="twitter.com" class="provider news twitter.com" src="images/twitterlogo.png"/></a>
+        <a href="#" ><img data-category="news" data-provider="boxfish.com" class="provider news boxfish.com" src="images/boxfish-logo.png"/></a>
+        <a href="#" ><img data-category="news" data-provider="wikipedia.infobox.com" class="provider news wikipedia.infobox" src="images/wiki-logo.png"/></a>
+        <!-- Food -->
+        <a href="#" ><img data-category="food" data-provider="bing.com" class="provider food bing.com" src="images/bing-logo.png"/></a>
+        <a href="#" ><img data-category="food" data-provider="twitter.com" class="provider food twitter.com" src="images/twitterlogo.png"/></a>
+        <a href="#" ><img data-category="food" data-provider="yelp.com" class="provider food yelp.com" src="images/yelplogo.png"/></a>
+        <a href="#" ><img data-category="food" data-provider="foursquare.com" class="provider food foursquare.com" src="images/foursquare-logo-45x45.png"/></a>
+        <!-- Local -->
+        <a href="#"><img data-category="local" data-provider="bing.com" class="provider local bing.com" src="images/bing-logo.png"/></a>
+        <a href="#"><img data-category="local" data-provider="twitter.com" class="provider local twitter.com" src="images/twitterlogo.png"/></a>
+        <a href="#"><img data-category="local" data-provider="yelp.com" class="provider local yelp.com" src="images/yelplogo.png"/></a>
+        <a href="#"><img data-category="local" data-provider="foursquare.com" class="provider local foursquare.com" src="images/foursquare-logo-45x45.png"/></a>
+        <!-- Apps -->
+        <a href="#" ><img data-category="apps" data-provider="bing.com" class="provider apps bing.com" src="images/bing-logo.png"/></a>
+        <a href="#" ><img data-category="apps" data-provider="twitter.com" class="provider apps twitter.com" src="images/twitterlogo.png"/></a>
     </nav>
 
     <div id="header">
         <div id="search-category">
-            <label data-category="find" class="search-category-button"><input type="radio" name="toggle"><span>Find</span></label>
-            <label data-category="news" class="search-category-button"><input checked type="radio" name="toggle"><span>News</span></label>
+            <label data-category="web" class="search-category-button"><input checked type="radio" name="toggle"><span>Web</span></label>
+            <label data-category="news" class="search-category-button"><input type="radio" name="toggle"><span>News</span></label>
             <label data-category="food" class="search-category-button"><input type="radio" name="toggle"><span>Food</span></label>
             <label data-category="local" class="search-category-button"><input type="radio" name="toggle"><span>Local</span></label>
+            <label data-category="apps" class="search-category-button"><input type="radio" name="toggle"><span>Apps</span></label>
         </div>
     </div>
 

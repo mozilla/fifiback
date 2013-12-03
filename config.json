@@ -1,35 +1,72 @@
 {
-  "food": {
-    "suggestDefault": "bing.com",
+    "web": {
+        "suggestDefault": "bing.com",
 
-    "suggestSet": [
-      "bing.com",
-      "yelp.com",
-      "en.wikipedia.org"
-    ],
+        "suggestSet": [
+            "bing.com"
+        ],
 
-    "querySet": [
-      "yelp.com",
-      "foursquare.com",
-      "en.wikipedia.org",
-      "twitter.com",
-      "bing.com"
-    ]
-  },
+        "querySet": [
+            "twitter.com",
+            "bing.com",
+            "boxfish.com",
+            "wikipedia.infobox"
+        ]
+    },
+    "news": {
+        "suggestDefault": "bing.com",
 
-  "news": {
-    "suggestDefault": "bing.com",
+        "suggestSet": [
+            "bing.com"
+        ],
 
-    "suggestSet": [
-      "bing.com",
-      "boxfish.com"
-    ],
+        "querySet": [
+            "twitter.com",
+            "bing.com",
+            "boxfish.com",
+            "wikipedia.infobox"
+        ]
+    },
+    "food": {
+        "suggestDefault": "bing.com",
 
-    "querySet": [
-      "twitter.com",
-      "bing.com",
-      "boxfish.com",
-      "wikipedia.infobox"
-    ]
-  }
+        "suggestSet": [
+            "bing.com",
+            "yelp.com"
+        ],
+
+        "querySet": [
+            "yelp.com",
+            "foursquare.com",
+            "twitter.com",
+            "bing.com"
+        ]
+    },
+
+    "local": {
+        "suggestDefault": "bing.com",
+
+        "suggestSet": [
+            "bing.com"
+        ],
+
+        "querySet": [
+            "twitter.com",
+            "bing.com",
+            "yelp.com",
+            "foursquare.com"
+        ]
+    },
+    "apps": {
+        "suggestDefault": "bing.com",
+
+        "suggestSet": [
+            "bing.com"
+        ],
+
+        "querySet": [
+            "bing.com",
+            "twitter.com"
+        ]
+    }
 }

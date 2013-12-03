@@ -8,20 +8,8 @@ define(['./utils'], function (utils) {
       this.results = {};
       this.terms = null;
         this.engines = {
-            'food': {
+            'web': {
                 'bing.com': {
-                    conceptsPrimary: [],
-                    conceptsSecondary: []
-                },
-                'yelp.com': {
-                    conceptsPrimary: [],
-                    conceptsSecondary: []
-                },
-//                'en.wikipedia.org': {
-//                    conceptsPrimary: [],
-//                    conceptsSecondary: []
-//                },
-                'wikipedia.infobox': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 },
@@ -29,7 +17,11 @@ define(['./utils'], function (utils) {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 },
-                'foursquare.com': {
+                'boxfish.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'wikipedia.infobox': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 }
@@ -48,6 +40,64 @@ define(['./utils'], function (utils) {
                     conceptsSecondary: []
                 },
                 'wikipedia.infobox': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                }
+            },
+            'food': {
+                'bing.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'yelp.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+//                'en.wikipedia.org': {
+//                    conceptsPrimary: [],
+//                    conceptsSecondary: []
+//                },
+//                'wikipedia.infobox': {
+//                    conceptsPrimary: [],
+//                    conceptsSecondary: []
+//                },
+                'twitter.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'foursquare.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                }
+            },
+            'local': {
+                'bing.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'yelp.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+//                'wikipedia.infobox': {
+//                    conceptsPrimary: [],
+//                    conceptsSecondary: []
+//                },
+                'twitter.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'foursquare.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                }
+            },
+            'apps': {
+                'bing.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'twitter.com': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 }
