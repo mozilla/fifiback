@@ -91,13 +91,13 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
             $(document).ready(function () {
                 //go through the stored settings, find the disabled search providers and add providerInactive css class (once the DOM is ready of course)
-                for(var searchCat in fifiSearchPreferences){
-                    for(var provider in fifiSearchPreferences[searchCat]){
+                for (var searchCat in fifiSearchPreferences) {
+                    for (var provider in fifiSearchPreferences[searchCat]) {
                         //get the boolean state for the search provider (turned on or off)
                         var state = fifiSearchPreferences[searchCat][provider];
-                        if(!state){
+                        if (!state) {
                             //the provider was disabled by the user, update the CSS
-                            var dataAttrs = "[data-category='"+searchCat+"'][data-provider='"+provider+"']";
+                            var dataAttrs = "[data-category='" + searchCat + "'][data-provider='" + provider + "']";
                             $(dataAttrs).addClass("providerInactive");
                         }
                     }
@@ -105,13 +105,13 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
             });
         }
 
-        function saveFifiSearchPreferences(){
+        function saveFifiSearchPreferences() {
             myLocalStorage.setItem(localStoragePrefsString, JSON.stringify(fifiSearchPreferences));
 
             console.log(JSON.parse(myLocalStorage.getItem(localStoragePrefsString)));
         }
 
-        function toggleProviderStatus(category,provider){
+        function toggleProviderStatus(category, provider) {
             //invert whatever boolean value we previously had
             fifiSearchPreferences[category][provider] = !fifiSearchPreferences[category][provider];
 
@@ -165,18 +165,17 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
         var searchCategories = ["web", "news", "food", "local", "apps"];
 
 
-
         //toggle what search categories will show based on the category buttons at top of screen
         $(document).ready(function () {
             $(".search-category-button").click(function (event) {
                 searchCategory = $(event.currentTarget).data().category;
                 console.log("changed search category: " + searchCategory);
-                $("."+searchCategory).show();
+                $("." + searchCategory).show();
 
                 //hide the other search providers on the left
-                searchCategories.forEach(function(value){
-                    if(value != searchCategory){
-                        $("."+value).hide();
+                searchCategories.forEach(function (value) {
+                    if (value != searchCategory) {
+                        $("." + value).hide();
                     }
                 });
             });
@@ -303,19 +302,6 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
                         if (list) {
                             list.forEach(function (item, index, list) {
-//                                content.append(
-//                                    $('<div class="result-item result-item-fixed-height"/>').append(
-//                                        $('<a class="result-title"/>').html(item.Title).attr('href', item.Url),
-////                                        $('<a class="result-url"/>').text(item.DisplayUrl),
-//                                        $('<p class="result-snippet"/>').html(item.Description)
-//                                    )
-//                                )
-
-//                                    var newElement = $('<div class="result-item result-item-fixed-height"/>').append(
-//                                        $('<a class="result-title"/>').html(item.Title).attr('href', item.Url),
-//                                        $('<p class="result-snippet"/>').html(item.Description)
-//                                    )
-
                                 gridwrapper_columns.append(
                                     $('<div data-cardtype="bing.com" class="card"/>').append(
                                         $('<img src="images/bing-favicon.png"/><a class="result-title"/>').html(item.Title).attr('href', item.Url),
@@ -323,15 +309,15 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                     )
                                 );
 
-                                //append to isotope
-//                                window.isoAppend(
-//                                    $('<div class="result-item result-item-fixed-height column"/>').append(
-//                                        $('<a class="result-title"/>').html(item.Title).attr('href', item.Url),
-//                                        $('<p class="result-snippet"/>').html(item.Description)
-//                                    )
-//                                );
-
                             });
+
+                            //inject fake ad card for testing
+                            gridwrapper_columns.append(
+                                $('<div data-cardtype="bing.com" class="card"/>').append(
+                                    $('<img src="images/bing-favicon.png"/><a class="result-title" style="background-color: yellow;" src="https://www.facebook.com/Cheetos">Hungry? Try Flaming Hot Cheetos</a>'),
+                                    $('<p class="result-snippet">Yum Yum</p>')
+                                )
+                            );
 
 //                            if(!window.hasColumnsLayout) {
 //                                window.hasColumnsLayout = true;
@@ -406,7 +392,6 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 //                                    rest.push(item);
 //                                }
 //                            }
-
 
 
                         } else {
@@ -592,13 +577,13 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                     case 'wikipedia.infobox':
                         var article = data.result;
 
-                        if(article){
-                            if($(article)[0] && $(article)[0].data == "null"){
+                        if (article) {
+                            if ($(article)[0] && $(article)[0].data == "null") {
                                 console.log("ERROR: no wiki card")
                             } else {
                                 console.log(article)
                                 gridwrapper_columns.prepend(
-                                    $('<div data-cardtype="wikipedia.infobox" class="wikipedia-info-card">').append( article).append("</div>")
+                                    $('<div data-cardtype="wikipedia.infobox" class="wikipedia-info-card">').append(article).append("</div>")
                                 );
                             }
                         }
@@ -613,9 +598,9 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                             tweets.statuses.slice(0, Math.min(3, tweets.statuses.length)).forEach(function (item) {
                                 gridwrapper_columns.append(
                                     $('<div data-cardtype="twitter.com" class="card"/>').append(
-                                        $('<img src="images/twitter16x16.png"/><div class="result-tweet"/>').append(
+                                        $('<div class="result-tweet"/>').append(
                                             $('<div class="result-tweet-user-info"/>').append(
-                                                $('<span class="result-tweet-user-name"/>').text(item.user.name + " "),
+                                                $('<img src="images/twitter16x16.png"/><span class="result-tweet-user-name"/>').text(item.user.name + " "),
                                                 $('<span class="result-tweet-user-screen-name"/>').text(item.user.screen_name)
                                             ),
                                             $('<p class="result-tweet-text"/>').html(item.text),
@@ -714,7 +699,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
             }
         });
 
-        $("#fifi-find-submit").on('click', function(){
+        $("#fifi-find-submit").on('click', function () {
             gridwrapper.hide();
             gridwrapper_columns.empty();
             goSearch(find.val());
@@ -740,7 +725,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
             find.val(term);
 
             for (var engine in autoset.engines[searchCategory]) {
-                if(fifiSearchPreferences[searchCategory][engine]){
+                if (fifiSearchPreferences[searchCategory][engine]) {
                     //only search an engine if it's currently enabled
                     //check for side filtering
                     socket.emit('api/query', {
@@ -792,17 +777,17 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
         /**********************************************/
 
         function openLeftMenu() {
-            $("#leftMenu").addClass( 'left-menu-open' );
+            $("#leftMenu").addClass('left-menu-open');
         }
 
-        function closeLeftMenu(){
-            $("#leftMenu").removeClass( 'left-menu-open' );
+        function closeLeftMenu() {
+            $("#leftMenu").removeClass('left-menu-open');
         }
 
         //handle clicks on the search provider icons in the left menu
-        $(".provider").on('click', function(){
+        $(".provider").on('click', function () {
             //hide the cards from this search provider in the grid
-            if($(this).hasClass("providerInactive")){
+            if ($(this).hasClass("providerInactive")) {
                 $("[data-cardtype='" + $(this).data('provider') + "']").removeClass("providerInactive");
             } else {
                 $("[data-cardtype='" + $(this).data('provider') + "']").addClass("providerInactive");
@@ -815,54 +800,80 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
             $(this).toggleClass("providerInactive");
         });
 
+        /**********************************************/
+        /* Search Provider store */
+        /**********************************************/
+        $("[data-category='add_providers']").on('click', function () {
 
-        /*********************************************/
-        /* Anthony scroll up code */
-        /*********************************************/
-        $(document).ready(function () {
-
-            find.on("focus", function () {
-                var scrollTo = $(this).offset().top - 30;
-                scrollPage(scrollTo, "up");
-            });
-
-            // find.on("blur",function(){
-            //     var scrollTo = 0;
-            //     scrollPage(scrollTo, "down");
-            // });
-
-            function scrollPage(scrollTo, direction) {
-                var bounceOffset;
-
-                if (direction == "up") {
-                    bounceOffset = 20;
-                } else {
-                    bounceOffset = 0;
-                }
-
-                $("body", "html").animate({
-                    scrollTop: scrollTo,
-                    easing: "linear"
-                }, 200, function () {
-
-                    // $("body","html").animate({
-                    //   scrollTop : scrollTo,
-                    //   easing : "linear"
-                    // }, 150)
-
-                });
+            if ($('#lightbox').length > 0) { // #lightbox exists
+                $('#content').html('<p>hello</p>');
+                $('#lightbox').show(); //.show('fast') for a transition
             }
+            else {
+                var lightbox =
+                    '<div id="lightbox">' +
+                        '<a href="#" id="closeLightbox">Click to Close</a>' +
+                        '<div id="content">' + //insert clicked link's href into img src
+                        '<p id="lightbox-content">hello</p>' +
+                        '</div>' +
+                        '</div>';
+                //insert lightbox HTML into page
+                $('body').append(lightbox);
+            }
+            //Click anywhere on the page to get rid of lightbox window
+            $('#closeLightbox').on('click', function () { //must use live, as the lightbox element is inserted into the DOM
+                $('#lightbox').hide();
+            });
         });
 
+/*********************************************/
+/* Anthony scroll up code */
+/*********************************************/
+$(document).ready(function () {
 
-        function showNewsViz() {
-            console.log("called")
+    find.on("focus", function () {
+        var scrollTo = $(this).offset().top - 30;
+        scrollPage(scrollTo, "up");
+    });
+
+    // find.on("blur",function(){
+    //     var scrollTo = 0;
+    //     scrollPage(scrollTo, "down");
+    // });
+
+    function scrollPage(scrollTo, direction) {
+        var bounceOffset;
+
+        if (direction == "up") {
+            bounceOffset = 20;
+        } else {
+            bounceOffset = 0;
+        }
+
+        $("body", "html").animate({
+            scrollTop: scrollTo,
+            easing: "linear"
+        }, 200, function () {
+
+            // $("body","html").animate({
+            //   scrollTop : scrollTo,
+            //   easing : "linear"
+            // }, 150)
+
+        });
+    }
+});
+
+
+function showNewsViz() {
+    console.log("called")
 //        $("#wrapper").hide();
 //        $("#boxfishNewsViz").show();
-            document.getElementById("wrapper").style.visibility = "hidden";
-            document.getElementById("boxfishNewsViz").style.visibility = "visible";
-        }
-    });
+    document.getElementById("wrapper").style.visibility = "hidden";
+    document.getElementById("boxfishNewsViz").style.visibility = "visible";
+}
+})
+;
 /* end function require pass params */
 
 
