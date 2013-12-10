@@ -693,14 +693,14 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                 }
 
 
-                                gridwrapper_columns.append(
-                                    $('<div data-cardtype="nytimes.article" class="card"/>').append(
-                                        $('<img src="images/nytimes-article-16x16.png"/><a class="result-title"/>').html(source + item.headline.main).attr('href', item.web_url),
-//                                        $('<p class="result-snippet"/>').html(item.pub_date),
-//                                        $('<img class="result-snippet" />').attr("src", articleImage),
-                                        $('<p class="result-snippet"/>').html(item.snippet.elide(nytimesArticleDescriptionLength))
-                                    )
-                                );
+//                                gridwrapper_columns.append(
+//                                    $('<div data-cardtype="nytimes.article" class="card"/>').append(
+//                                        $('<img src="images/nytimes-article-16x16.png"/><a class="result-title"/>').html(source + item.headline.main).attr('href', item.web_url),
+////                                        $('<p class="result-snippet"/>').html(item.pub_date),
+////                                        $('<img class="result-snippet" />').attr("src", articleImage),
+//                                        $('<p class="result-snippet"/>').html(item.snippet.elide(nytimesArticleDescriptionLength))
+//                                    )
+//                                );
 
                             });
                         }
