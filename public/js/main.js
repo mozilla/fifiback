@@ -674,7 +674,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                         break;
 
                     case 'nytimes.article':
-                        console.log("in nytimes article - 2")
+                        console.log("in nytimes article - 3")
                         var json = $.parseJSON(data.result);
                         var articles = json.response.docs;
 
