@@ -279,8 +279,6 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                     case 'boxfish.com':
                         //parse out the channels that boxfish is returning related to these keywords
                         if (data.result) {
-                            console.log("boxfish")
-                            console.log(data.result)
                             if (data.result.channels) {
                                 data.result.channels.forEach(function (item, index, list) {
                                     gridwrapper_columns.append(
@@ -684,15 +682,20 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                             articles.forEach(function (item, index, list) {
 
                                 //see if there's an image associated with the article
-                                var articleImage = "";
-                                if(item.multimedia && item.multimedia.length > 0){
-                                    articleImage = "http://www.nytimes.com/" + item.multimedia[0].url;
+//                                var articleImage = "";
+//                                if(item.multimedia && item.multimedia.length > 0){
+//                                    articleImage = "http://www.nytimes.com/" + item.multimedia[0].url;
+//                                }
+
+                                var source = "";
+                                if(item.source){
+                                    source = item.source + " - ";
                                 }
 
 
                                 gridwrapper_columns.append(
                                     $('<div data-cardtype="nytimes.article" class="card"/>').append(
-                                        $('<img src="images/nytimes-article-16x16.png"/><a class="result-title"/>').html(item.source + " - " + item.headline.main).attr('href', item.web_url),
+                                        $('<img src="images/nytimes-article-16x16.png"/><a class="result-title"/>').html(source + item.headline.main).attr('href', item.web_url),
 //                                        $('<p class="result-snippet"/>').html(item.pub_date),
 //                                        $('<img class="result-snippet" />').attr("src", articleImage),
                                         $('<p class="result-snippet"/>').html(item.snippet.elide(nytimesArticleDescriptionLength))
