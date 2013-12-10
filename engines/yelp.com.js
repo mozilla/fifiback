@@ -27,9 +27,10 @@ module.exports = new (require('../Engine'))({
 
     yelpHelper.search({
       term: term,
-      location: location
+        //TODO re-enable geo i guess for yelp
+      location: "New York"
     }, function (err, results) {
-      if (err) {
+        if (err) {
         d.reject(err);
       } else {
         d.resolve(results);

@@ -1,7 +1,17 @@
+//TODO
+//1. fix 3 locations of settings - autoset, config.json, main.js
+
 require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
-    'base/geo', 'settings', 'nunjucks', 'templates', 'moment', 'lib/d3.min'],
-    function ($, io, find, Autoset, utils, geo, settings, nunjucks, templates, moment, d3) {
+    'base/geo', 'settings', 'nunjucks', 'templates', 'moment'],
+    function ($, io, find, Autoset, utils, geo, settings, nunjucks, templates, moment) {
         'use strict';
+
+        /*********************************************************/
+        /* Settings */
+        /*********************************************************/
+        var twitterResultsLimit = 10;
+        var nytimesArticleDescriptionLength = 115;
+        var bingNewsStringLength = 115;
 
         /*********************************************************/
         /* Polyfills */
@@ -40,6 +50,11 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
             }());
         }
 
+        String.prototype.elide = String.prototype.elide ||
+            function(n){
+                return this.length>n ? this.substr(0,n-1)+'&hellip;' : this;
+            };
+
         /*********************************************************/
         /* End Polyfills */
         /*********************************************************/
@@ -60,17 +75,17 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                 "boxfish.com": true
             },
             "news": {
-                "bing.com": true,
+                "bing.news": true,
                 "twitter.com": true,
                 "wikipedia.infobox": true,
-                "boxfish.com": true
+                "boxfish.com": true,
+                "nytimes.article": true
             },
             "food": {
                 "bing.com": true,
                 "yelp.com": true,
-                "wikipedia.infobox": true,
                 "twitter.com": true,
-                "foursqure.com": true
+                "foursquare.com": true
             },
             "local": {
                 "bing.com": true,
@@ -80,7 +95,8 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
             },
             "apps": {
                 "bing.com": true,
-                "twitter.com": true
+                "twitter.com": true,
+                "firefox.marketplace": true
             }
         }
 
@@ -98,7 +114,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                         if (!state) {
                             //the provider was disabled by the user, update the CSS
                             var dataAttrs = "[data-category='" + searchCat + "'][data-provider='" + provider + "']";
-                            $(dataAttrs).addClass("providerInactive");
+                            $(dataAttrs).hide();
                         }
                     }
                 }
@@ -152,13 +168,13 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
         nunjucks.configure('/templates', { autoescape: true });
 
-        function toggleVizIcon() {
-            if (searchCategory === "news") {
-                $("#viz-icon").show();
-            } else {
-                $("#viz-icon").hide();
-            }
-        }
+//        function toggleVizIcon() {
+//            if (searchCategory === "news") {
+//                $("#viz-icon").show();
+//            } else {
+//                $("#viz-icon").hide();
+//            }
+//        }
 
         /* search category buttons */
         var searchCategory = "web";
@@ -167,7 +183,13 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
         //toggle what search categories will show based on the category buttons at top of screen
         $(document).ready(function () {
-            $(".search-category-button").click(function (event) {
+            //handle the reload case where the button is set from the previous page load
+            //TODO this is hacky and too dependent on the DOM. Hell, all this code is. We really need
+            // to go MVC when we re-write this
+            searchCategory = $("input:radio:checked").data('category');
+            console.log("searchCategory at start: " + searchCategory);
+
+            $("#search-category label input").click(function (event) {
                 searchCategory = $(event.currentTarget).data().category;
                 console.log("changed search category: " + searchCategory);
                 $("." + searchCategory).show();
@@ -255,15 +277,15 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
                 switch (data.engineId) {
                     case 'boxfish.com':
-                        var content = $('#details-list li[data-engine="' + data.engineId + '"] .content');
-
                         //parse out the channels that boxfish is returning related to these keywords
                         if (data.result) {
+                            console.log("boxfish")
+                            console.log(data.result)
                             if (data.result.channels) {
                                 data.result.channels.forEach(function (item, index, list) {
                                     gridwrapper_columns.append(
                                         $('<div data-cardtype="boxfish.com" class="card"/>').append(
-                                            $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html(item.name),
+                                            $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html("TV Channel: " + item.name).attr('href', item.Url),
                                             $('<p class="result-snippet"/>').html(item.number)
                                         )
                                     )
@@ -275,7 +297,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                     gridwrapper_columns.append(
                                         $('<div data-cardtype="boxfish.com" class="card"/>').append(
 //                                            "<p>Mentioned on ...</p>",
-                                            $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html(item.program.name),
+                                            $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html("TV Transcript: " + item.program.name).attr('href', item.Url),
                                             $('<p class="result-snippet"/>').html(item.text)
                                         )
                                     )
@@ -286,7 +308,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                 data.result.programs.forEach(function (item, index, list) {
                                     gridwrapper_columns.append(
                                         $('<div data-cardtype="boxfish.com" class="card"/>').append(
-                                            $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html(item.name),
+                                            $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html("TV Program: " + item.name).attr('href', item.Url),
                                             $('<p class="result-snippet"/>').html(item.description)
                                         )
                                     )
@@ -294,11 +316,27 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                             }
                         }
                         break;
-                    case 'bing.com':
+
+                    case 'bing.news':
                         var json = $.parseJSON(data.result);
                         var list = json.d.results;
 
-                        //var content = $('#details-list li[data-engine="' + data.engineId + '"] .content');
+                        if (list) {
+                            list.forEach(function (item, index, list) {
+                                gridwrapper_columns.append(
+                                    $('<div data-cardtype="bing.news" class="card"/>').append(
+                                        $('<img src="images/bing-favicon.png"/><a class="result-title"/>').html(item.Source + " - " + item.Title).attr('href', item.Url),
+//                                        $('<p class="result-snippet"/>').html(item.Date),
+                                        $('<p class="result-snippet"/>').html(item.Description.elide(bingNewsStringLength))
+                                    )
+                                );
+                            });
+                        }
+                        break;
+
+                    case 'bing.com':
+                        var json = $.parseJSON(data.result);
+                        var list = json.d.results;
 
                         if (list) {
                             list.forEach(function (item, index, list) {
@@ -308,9 +346,11 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                         $('<p class="result-snippet"/>').html(item.Description)
                                     )
                                 );
-
                             });
 
+
+
+                            //************** this is just for experimenting with the look of ads, it's not real ***************
                             //inject fake ad card for testing
                             gridwrapper_columns.append(
                                 $('<div data-cardtype="bing.com" class="card"/>').append(
@@ -438,38 +478,54 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
                     case 'yelp.com':
                         var businesses = data.result && data.result.businesses;
-                        var content = $('#details-list li[data-engine="' + data.engineId + '"] .content');
+
+                        var content = $('<div data-cardtype="yelp.com" class="big-card">');
                         var first, $first, $reviews;
 
                         if (businesses) {
                             first = businesses.shift();
-                            $first = $('<div class="result-header cf"/>').css({ 'background-image': 'url(' + (first.image_url || '').replace(/ms.jpg$/, "l.jpg") + ')' }).appendTo(content);
-                            $reviews = $('<div class="result-header-reviews"/>');
-                            for (var i = 0; i < 5; i += 1) {
-                                if (i < Math.floor(first.rating)) {
-                                    $reviews.append($('<i class="icon-star"></i>'));
-                                } else if (i < first.rating) {
-                                    $reviews.append(
-                                        $('<div class="icon-star-half-colored"/>').append(
-                                            $('<i class="icon-star-half"></i>'),
-                                            $('<i class="icon-star-half-empty"></i>')
-                                        )
-                                    );
-                                } else {
-                                    $reviews.append($('<i class="icon-star-empty"></i>'));
-                                }
-                            }
-                            // need a bit of space between stars and # of reviews
-                            $reviews.append(" ");
-                            $first.append(
-                                $('<span class="search-brand-icon"/>').append("Yelp ", $('<img class="search-brand-image image-yelp" src="images/yelp.com-16x16.png"/>')),
-                                $('<div class="result-header-info"/>').append(
-                                    $('<p class="result-header-title"/>').text(first.name),
-                                    $('<p class="result-header-address"/>').text(first.location.address.shift()),
-                                    $('<p class="result-header-phone"/>').text(first.display_phone),
-                                    $reviews.append($('<span/>').text(first.review_count + " reviews"))
+
+                            content.append(
+                                $('<div />').append(
+                                    $('<img src="images/yelp.com-16x16.png"/> <a class="result-title"/>').html(first.name).attr('href', first.url),
+                                    $('<img width="240" src="' + (first.image_url || '').replace(/ms.jpg$/, "l.jpg") + '"/>'),
+                                    $('<p class="result-snippet"/>').text(first.location.address.shift()),
+                                    $('<p class="result-snippet"/>').text(first.display_phone),
+                                    $('<p class="result-snippet"/>').text(first.review_count + " reviews"),
+                                    $('<br/>')
                                 )
                             );
+
+//                            $first = $('<div class="result-header cf"/>').css({ 'background-image': 'url(' + (first.image_url || '').replace(/ms.jpg$/, "l.jpg") + ')' }).appendTo(content);
+
+//                            $reviews = $('<div class="result-header-reviews"/>');
+//                            for (var i = 0; i < 5; i += 1) {
+//                                if (i < Math.floor(first.rating)) {
+//                                    $reviews.append($('<i class="icon-star"></i>'));
+//                                } else if (i < first.rating) {
+//                                    $reviews.append(
+//                                        $('<div class="icon-star-half-colored"/>').append(
+//                                            $('<i class="icon-star-half"></i>'),
+//                                            $('<i class="icon-star-half-empty"></i>')
+//                                        )
+//                                    );
+//                                } else {
+//                                    $reviews.append($('<i class="icon-star-empty"></i>'));
+//                                }
+//                            }
+//                            // need a bit of space between stars and # of reviews
+//                            $reviews.append(" ");
+
+//                            $first.append(
+//                                $('<div data-cardtype="yelp.com" class="card"/>').append(
+//                                    $('<img src="images/yelp.com-16x16.png"/>',"Yelp ")),
+////                                    $('<img src="' + (first.image_url || '').replace(/ms.jpg$/, "l.jpg") + '"/>'),
+//                                    $('<p class="result-title"/>').text(first.name),
+//                                    $('<p class="result-snippet"/>').text(first.location.address.shift()),
+//                                    $('<p class="result-snippet"/>').text(first.display_phone),
+//                                    $('<p class="result-snippet"/>').text(first.review_count + " reviews")
+//                            );
+
                             businesses.slice(0, Math.min(3, businesses.length)).forEach(function (item) {
                                 var $reviews = $('<div class="result-reviews"/>');
                                 for (var i = 0; i < 5; i += 1) {
@@ -488,81 +544,162 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                 }
                                 content.append(
                                     $('<div class="result-item result-item-fixed-height cf"/>').append(
-                                        $('<div class="result-image-wrapper"/>').append(
-                                            $('<img class="result-image"/>').attr('src', (item.image_url || ''))
-                                        ),
                                         $('<div class="result-info"/>').append(
-                                            $('<p class="result-title"/>').text(item.name),
-                                            $reviews,
-                                            $('<span class="result-reviews"/>').text(item.review_count + " reviews")
+                                            $('<a class="result-title"/>').html(item.name).attr('href', item.url),
+                                            $('<div class="result-image-wrapper"/>').append(
+                                                $('<img class="result-image"/>').attr('src', (item.image_url || ''))
+                                            ),
+                                            $('<p class="result-snippet"/>').text(item.location.address.shift()),
+                                            $('<p class="result-snippet"/>').text(item.display_phone),
+                                            $('<p class="result-snippet"/>').text(item.review_count + " reviews"),
+                                            $('<br/>')
+//                                            $reviews,
+//                                            $('<span class="result-reviews"/>').text(item.review_count + " reviews")
                                         )
+
                                     )
                                 );
                             });
                         } else {
                             content.parent().remove();
                         }
+
+                        //prepend the whole yelp card in the columns
+                        gridwrapper_columns.prepend(content);
+
                         break;
 
                     case 'foursquare.com':
-                        var groups = data.result && data.result.groups;
-                        var businesses;
-                        if (groups) {
-                            groups.every(function (group) {
-                                if (group.name === "recommended") {
-                                    businesses = group.items;
-                                    return false;
-                                }
-                                return true;
-                            });
-                        }
-                        var content = $('#details-list li[data-engine="' + data.engineId + '"] .content');
-                        var first, $first, $reviews;
+                        var venues = data.result && data.result.venues;
 
-                        if (businesses) {
-                            first = businesses.shift();
-                            $first = $('<div class="result-header cf"/>').css({ 'background-image': 'url(' + (first.venue.photos.groups[0].items[0].prefix + "320x320" + first.venue.photos.groups[0].items[0].suffix || '') + ')' }).appendTo(content);
-                            $reviews = $('<div class="result-header-reviews"/>');
-                            $reviews = $('<div class="result-header-reviews"/>');
-                            $reviews.append($("<span class='venue-rating'/>").text((first.venue.rating || 0).toPrecision(2)).
-                                toggleClass("venue-rating-positive", first.venue.rating && first.venue.rating > 7).
-                                toggleClass("venue-rating-neutral", first.venue.rating && first.venue.rating <= 7));
-                            // need a bit of space between stars and # of reviews
-                            $reviews.append(" ");
-                            $first.append(
-                                $('<span class="search-brand-icon"/>').append("FourSquare ", $('<img class="search-brand-image image-foursquare" src="images/foursquare-16x16.png"/>')),
-                                $('<div class="result-header-info"/>').append(
-                                    $('<p class="result-header-title"/>').text(first.venue.name),
-                                    $('<p class="result-header-address"/>').text(first.venue.location.address),
-                                    $('<p class="result-header-phone"/>').text(first.venue.contact.formattedPhone),
-                                    $reviews.append($('<span/>').text(first.venue.likes.count + " likes"))
-                                )
-                            );
-                            businesses.slice(0, Math.min(3, businesses.length)).forEach(function (item) {
-                                var $reviews = $('<div class="result-reviews"/>');
-                                var src = '';
-                                if (item.venue.photos && item.venue.photos.groups[0] && item.venue.photos.groups[0].items[0]) {
-                                    src = (item.venue.photos.groups[0].items[0].prefix + "100x100" + item.venue.photos.groups[0].items[0].suffix);
-                                }
-                                $reviews = $('<div class="result-header-reviews"/>').
-                                    append($("<span class='venue-rating'/>").text((item.venue.rating || 0).toPrecision(2)).
-                                        toggleClass("venue-rating-positive", item.venue.rating && item.venue.rating > 7).
-                                        toggleClass("venue-rating-neutral", item.venue.rating && item.venue.rating <= 7));
-                                content.append(
-                                    $('<div class="result-item result-item-fixed-height cf"/>').append(
-                                        $('<div class="result-image-wrapper"/>').append(
-                                            $('<img class="result-image"/>').attr('src', src)
-                                        ),
-                                        $('<div class="result-info"/>').append(
-                                            $('<p class="result-title"/>').text(item.venue.name),
-                                            $reviews,
-                                            $('<span class="result-reviews"/>').text(item.venue.likes.count + " likes")
-                                        )
+                        if (venues) {
+                            venues.forEach(function (item, index, list) {
+                                gridwrapper_columns.append(
+                                    $('<div data-cardtype="foursquare.com" class="card"/>').append(
+                                        $('<img src="images/foursquare-16x16.png"/><a class="result-title"/>').html(item.name).attr('href', item.url),
+                                        $('<p class="result-snippet"/>').html(item.location.address),
+                                        $('<p class="result-snippet"/>').html(item.location.city + ", " + item.location.state),
+                                        $('<p class="result-snippet"/>').html(item.contact.formattedPhone)
                                     )
                                 );
+
                             });
-                        } else {
-                            content.parent().remove();
+                        }
+                        break;
+
+//                        //var groups = data.result && data.result.groups;
+//                        var businesses = data.result.venues;
+////                        if (groups) {
+////                            groups.every(function (group) {
+////                                if (group.name === "recommended") {
+////                                    businesses = group.items;
+////                                    return false;
+////                                }
+////                                return true;
+////                            });
+////                        }
+//                        var content = $('<div/>', {
+//                            id: 'foursquare-card'
+//                        });
+//                        var first, $first, $reviews;
+//
+//                        if (businesses) {
+//                            first = businesses.shift();
+//                            $first = $('<div class="result-header cf"/>').css({ 'background-image': 'url(' + (first.venue.photos.groups[0].items[0].prefix + "320x320" + first.venue.photos.groups[0].items[0].suffix || '') + ')' }).appendTo(content);
+////                            $reviews = $('<div class="result-header-reviews"/>');
+////                            $reviews = $('<div class="result-header-reviews"/>');
+////                            $reviews.append($("<span class='venue-rating'/>").text((first.venue.rating || 0).toPrecision(2)).
+////                                toggleClass("venue-rating-positive", first.venue.rating && first.venue.rating > 7).
+////                                toggleClass("venue-rating-neutral", first.venue.rating && first.venue.rating <= 7));
+////                            // need a bit of space between stars and # of reviews
+////                            $reviews.append(" ");
+//                            $first.append(
+//                                $('<span class="search-brand-icon"/>').append("FourSquare ", $('<img class="search-brand-image image-foursquare" src="images/foursquare-16x16.png"/>')),
+//                                $('<div class="result-header-info"/>').append(
+//                                    $('<p class="result-header-title"/>').text(first.name),
+//                                    $('<p class="result-header-address"/>').text(first.location.address),
+//                                    $('<p class="result-header-phone"/>').text(first.contact.formattedPhone)
+//                                    //$reviews.append($('<span/>').text(first.likes.count + " likes"))
+//                                )
+//                            );
+//                            businesses.slice(0, Math.min(3, businesses.length)).forEach(function (item) {
+//                                var $reviews = $('<div class="result-reviews"/>');
+//                                var src = '';
+//                                if (item.venue.photos && item.venue.photos.groups[0] && item.venue.photos.groups[0].items[0]) {
+//                                    src = (item.venue.photos.groups[0].items[0].prefix + "100x100" + item.venue.photos.groups[0].items[0].suffix);
+//                                }
+//                                $reviews = $('<div class="result-header-reviews"/>').
+//                                    append($("<span class='venue-rating'/>").text((item.venue.rating || 0).toPrecision(2)).
+//                                        toggleClass("venue-rating-positive", item.venue.rating && item.venue.rating > 7).
+//                                        toggleClass("venue-rating-neutral", item.venue.rating && item.venue.rating <= 7));
+//                                content.append(
+//                                    $('<div class="result-item result-item-fixed-height cf"/>').append(
+//                                        $('<div class="result-image-wrapper"/>').append(
+//                                            $('<img class="result-image"/>').attr('src', src)
+//                                        ),
+//                                        $('<div class="result-info"/>').append(
+//                                            $('<p class="result-title"/>').text(item.venue.name),
+//                                            $reviews,
+//                                            $('<span class="result-reviews"/>').text(item.venue.likes.count + " likes")
+//                                        )
+//                                    )
+//                                );
+//                            });
+//                        } else {
+//                            content.parent().remove();
+//                        }
+//
+//                        //prepend foursquare card to columns
+//                        gridwrapper_columns.prepend(content);
+//
+//
+//                        break;
+
+                    case 'firefox.marketplace':
+                        var json = $.parseJSON(data.result);
+                        var apps = json.objects;
+
+                        if (apps) {
+                            apps.forEach(function (item, index, list) {
+                                gridwrapper_columns.prepend(
+                                    $('<div data-cardtype="firefox.marketplace" class="card"/>').append(
+                                        $('<img src="images/firefox-marketplace-16x16.png"/><a class="result-title"/>').html(item.name).attr('href', item.absolute_url),
+                                        $('<p class="result-snippet"/>').html(item.author),
+                                        $('<p class="result-snippet"/>').html("Rating: " + item.ratings.average),
+                                        $('<p class="result-snippet"/>').html("Reviews: " + item.ratings.count),
+                                        $('<img class="result-snippet" />').attr("src", item.icons["64"])
+                                    )
+                                );
+
+                            });
+                        }
+                        break;
+
+                    case 'nytimes.article':
+                        console.log("in nytimes article")
+                        var json = $.parseJSON(data.result);
+                        var articles = json.response.docs;
+
+                        if (articles) {
+                            articles.forEach(function (item, index, list) {
+
+                                //see if there's an image associated with the article
+                                var articleImage = "";
+                                if(item.multimedia && item.multimedia.length > 0){
+                                    articleImage = "http://www.nytimes.com/" + item.multimedia[0].url;
+                                }
+
+
+                                gridwrapper_columns.append(
+                                    $('<div data-cardtype="nytimes.article" class="card"/>').append(
+                                        $('<img src="images/nytimes-article-16x16.png"/><a class="result-title"/>').html(item.source + " - " + item.headline.main).attr('href', item.web_url),
+//                                        $('<p class="result-snippet"/>').html(item.pub_date),
+//                                        $('<img class="result-snippet" />').attr("src", articleImage),
+                                        $('<p class="result-snippet"/>').html(item.snippet.elide(nytimesArticleDescriptionLength))
+                                    )
+                                );
+
+                            });
                         }
                         break;
 
@@ -581,7 +718,6 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                             if ($(article)[0] && $(article)[0].data == "null") {
                                 console.log("ERROR: no wiki card")
                             } else {
-                                console.log(article)
                                 gridwrapper_columns.prepend(
                                     $('<div data-cardtype="wikipedia.infobox" class="wikipedia-info-card">').append(article).append("</div>")
                                 );
@@ -591,17 +727,19 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
                     case 'twitter.com':
                         var tweets = data.result;
-                        var content = $('#details-list li[data-engine="' + data.engineId + '"] .content');
+                        //var content = $('#details-list li[data-engine="' + data.engineId + '"] .content');
 
                         if (tweets) {
                             // https://twitter.com/logo#twitter-content
-                            tweets.statuses.slice(0, Math.min(3, tweets.statuses.length)).forEach(function (item) {
+                            tweets.statuses.slice(0, Math.min(twitterResultsLimit, tweets.statuses.length)).forEach(function (item) {
                                 gridwrapper_columns.append(
                                     $('<div data-cardtype="twitter.com" class="card"/>').append(
                                         $('<div class="result-tweet"/>').append(
                                             $('<div class="result-tweet-user-info"/>').append(
-                                                $('<img src="images/twitter16x16.png"/><span class="result-tweet-user-name"/>').text(item.user.name + " "),
-                                                $('<span class="result-tweet-user-screen-name"/>').text(item.user.screen_name)
+
+                                                $('<img src="images/twitter16x16.png"/><a class="result-title"/>').html(item.user.name + " @" + item.user.screen_name).attr('href', "https://www.twitter.com/"+item.user.screen_name+"/status/"+item.id)
+                                                //$('<img src="images/twitter16x16.png"/><span class="result-tweet-user-name"/>').text(item.user.name + " "),
+                                                //$('<span class="result-tweet-user-screen-name"/>').text(item.user.screen_name)
                                             ),
                                             $('<p class="result-tweet-text"/>').html(item.text),
                                             $('<div class="result-tweet-meta"/>').append(
@@ -630,7 +768,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 //                                );
                             });
                         } else {
-                            content.parent().remove();
+                            //content.parent().remove();
                         }
                         break;
 
@@ -788,9 +926,10 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
         $(".provider").on('click', function () {
             //hide the cards from this search provider in the grid
             if ($(this).hasClass("providerInactive")) {
-                $("[data-cardtype='" + $(this).data('provider') + "']").removeClass("providerInactive");
+                //provider was inactive, re-activate it
+                $("[data-cardtype='" + $(this).data('provider') + "']").show();
             } else {
-                $("[data-cardtype='" + $(this).data('provider') + "']").addClass("providerInactive");
+                $("[data-cardtype='" + $(this).data('provider') + "']").hide();
             }
 
             //save the settings in localStorage

@@ -9,8 +9,8 @@
         "querySet": [
             "twitter.com",
             "bing.com",
-            "boxfish.com",
-            "wikipedia.infobox"
+            "wikipedia.infobox",
+            "boxfish.com"
         ]
     },
     "news": {
@@ -22,9 +22,10 @@
 
         "querySet": [
             "twitter.com",
-            "bing.com",
+            "bing.news",
             "boxfish.com",
-            "wikipedia.infobox"
+            "wikipedia.infobox",
+            "nytimes.article"
         ]
     },
     "food": {
@@ -66,7 +67,8 @@
 
         "querySet": [
             "bing.com",
-            "twitter.com"
+            "twitter.com",
+            "firefox.marketplace"
         ]
     }
 }

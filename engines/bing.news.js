@@ -16,8 +16,9 @@ module.exports = new (require('../Engine'))({
     console.log('bing queryFunc: ' + term);
     var latlon = '';
 
+
     var url = 'https://user:' + qs.escape(nconf.get('bingKey')) +
-              '@api.datamarket.azure.com/Bing/Search/v1/Web?Query=%27' + qs.escape(term) + '%27&%24top='+bingResults+'&%24format=JSON';
+              '@api.datamarket.azure.com/Bing/Search/v1/News?Query=%27' + qs.escape(term) + '%27&%24top='+bingResults+'&%24format=JSON';
 
     if(geolocation) {
         latlon = geolocation.split(',');

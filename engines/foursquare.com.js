@@ -20,15 +20,20 @@ module.exports = new (require('../Engine'))({
     //console.log("FQ QUERY", term, location, geolocation);
     var d = q.defer();
     //console.log("geolocation", geolocation);
-    var lat = geolocation.split(',')[0];
-    var lng = geolocation.split(',')[1];
-    foursquare.Venues.explore(
+//    var lat = geolocation.split(',')[0];
+//    var lng = geolocation.split(',')[1];
+      //TODO re-implement geo
+      var lat = "";
+      var lng = "";
+      var near = "New York, NY";
+    foursquare.Venues.search(
       lat,
       lng,
-      { query : term, limit : 5, near : location, venuePhotos : 1, radius : 4000 },
+      near,
+      { query : term, limit : 5, venuePhotos : 1, radius : 4000 },
       null, // accessToken
       function callback (err, results) {
-        //console.log("FourSquare", err, results);
+        console.log("FourSquare", err, results);
         if(err) { d.reject(err); }
         else {
           d.resolve(results);

@@ -17,17 +17,21 @@ define(['./utils'], function (utils) {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 },
-                'boxfish.com': {
+                'wikipedia.infobox': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 },
-                'wikipedia.infobox': {
+                'boxfish.com': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 }
             },
             'news': {
                 'bing.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'bing.news': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 },
@@ -40,6 +44,10 @@ define(['./utils'], function (utils) {
                     conceptsSecondary: []
                 },
                 'wikipedia.infobox': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'nytimes.article': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 }
@@ -69,6 +77,10 @@ define(['./utils'], function (utils) {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 }
+//                'google.rightside': {
+//                    conceptsPrimary: [],
+//                    conceptsSecondary: []
+//                }
             },
             'local': {
                 'bing.com': {
@@ -98,6 +110,10 @@ define(['./utils'], function (utils) {
                     conceptsSecondary: []
                 },
                 'twitter.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'firefox.marketplace': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 }

@@ -88,9 +88,7 @@ io.configure(function () {
 io.sockets.on('connection', function (socket) {
   // FIND API. The main API
   socket.on('api/find', function (data) {
-    var searchType = data.search || 'news'; // fallback to news for now
-        console.log(data.search);
-      console.log('default search find type ', searchType);
+    var searchType = data.search || 'web'; // fallback to news for now
 
     var term = data.term || '';
     var location = (data.location && data.location.trim()) || '';
@@ -228,8 +226,7 @@ io.sockets.on('connection', function (socket) {
 
   // SUGGEST API
   socket.on('api/suggest', function (data) {
-    var searchType = data.search || 'news'; // fallback to food for now
-      console.log(data.search);
+    var searchType = data.search || 'web'; // fallback to web for now
       console.log('default search suggest type ', searchType);
 
     var set = data.set || engines.config[searchType].suggestSet;
