@@ -687,20 +687,20 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 //                                    articleImage = "http://www.nytimes.com/" + item.multimedia[0].url;
 //                                }
 
-                                var source = "";
-                                if(item.source){
-                                    source = item.source + " - ";
-                                }
-
-
-                                gridwrapper_columns.append(
-                                    $('<div data-cardtype="nytimes.article" class="card"/>').append(
-                                        $('<img src="images/nytimes-article-16x16.png"/><a class="result-title"/>').html(source + item.headline.main).attr('href', item.web_url),
-//                                        $('<p class="result-snippet"/>').html(item.pub_date),
-//                                        $('<img class="result-snippet" />').attr("src", articleImage),
-                                        $('<p class="result-snippet"/>').html(item.snippet.elide(nytimesArticleDescriptionLength))
-                                    )
-                                );
+//                                var source = "";
+//                                if(item.source){
+//                                    source = item.source + " - ";
+//                                }
+//
+//
+//                                gridwrapper_columns.append(
+//                                    $('<div data-cardtype="nytimes.article" class="card"/>').append(
+//                                        $('<img src="images/nytimes-article-16x16.png"/><a class="result-title"/>').html(source + item.headline.main).attr('href', item.web_url),
+////                                        $('<p class="result-snippet"/>').html(item.pub_date),
+////                                        $('<img class="result-snippet" />').attr("src", articleImage),
+//                                        $('<p class="result-snippet"/>').html(item.snippet.elide(nytimesArticleDescriptionLength))
+//                                    )
+//                                );
 
                             });
                         }
@@ -752,23 +752,6 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                         )
                                     )
                                 );
-
-                                //isotope
-//                                window.isoAppend(
-//                                    $('<div class="result-item column"/>').append(
-//                                        $('<div class="result-tweet"/>').append(
-//                                            $('<div class="result-tweet-user-info"/>').append(
-//                                                $('<span class="result-tweet-user-name"/>').text(item.user.name + " "),
-//                                                $('<span class="result-tweet-user-screen-name"/>').text(item.user.screen_name)
-//                                            ),
-//                                            $('<p class="result-tweet-text"/>').html(item.text),
-//                                            $('<div class="result-tweet-meta"/>').append(
-//                                                $('<p class="result-tweet-time-ago"/>').text(moment(item.created_at).fromNow()),
-//                                                $('<i class="icon-twitter"></i>')
-//                                            )
-//                                        )
-//                                    )
-//                                );
                             });
                         } else {
                             //content.parent().remove();
