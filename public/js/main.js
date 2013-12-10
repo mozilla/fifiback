@@ -674,9 +674,17 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                         break;
 
                     case 'nytimes.article':
-                        console.log("in nytimes article - 3")
+                        console.log("in nytimes article")
+                        console.log(data.result)
+                        if(data.result.contains("403 Developer Inactive")){
+                            console.log("ERROR: getting 403 Developer Inactive for NYTimes API, fail silently");
+                            break;
+                        }
+
                         var json = $.parseJSON(data.result);
                         var articles = json.response.docs;
+
+                        console.log(articles)
 
                         if (articles) {
                             articles.forEach(function (item, index, list) {
@@ -687,20 +695,20 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 //                                    articleImage = "http://www.nytimes.com/" + item.multimedia[0].url;
 //                                }
 
-//                                var source = "";
-//                                if(item.source){
-//                                    source = item.source + " - ";
-//                                }
-//
-//
-//                                gridwrapper_columns.append(
-//                                    $('<div data-cardtype="nytimes.article" class="card"/>').append(
-//                                        $('<img src="images/nytimes-article-16x16.png"/><a class="result-title"/>').html(source + item.headline.main).attr('href', item.web_url),
-////                                        $('<p class="result-snippet"/>').html(item.pub_date),
-////                                        $('<img class="result-snippet" />').attr("src", articleImage),
-//                                        $('<p class="result-snippet"/>').html(item.snippet.elide(nytimesArticleDescriptionLength))
-//                                    )
-//                                );
+                                var source = "";
+                                if(item.source){
+                                    source = item.source + " - ";
+                                }
+
+
+                                gridwrapper_columns.append(
+                                    $('<div data-cardtype="nytimes.article" class="card"/>').append(
+                                        $('<img src="images/nytimes-article-16x16.png"/><a class="result-title"/>').html(source + item.headline.main).attr('href', item.web_url),
+//                                        $('<p class="result-snippet"/>').html(item.pub_date),
+//                                        $('<img class="result-snippet" />').attr("src", articleImage),
+                                        $('<p class="result-snippet"/>').html(item.snippet.elide(nytimesArticleDescriptionLength))
+                                    )
+                                );
 
                             });
                         }
