@@ -47,7 +47,15 @@ define(['./utils'], function (utils) {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 },
-                'nytimes.article': {
+//                'nytimes.article': {
+//                    conceptsPrimary: [],
+//                    conceptsSecondary: []
+//                }
+                'guardian.com': {
+                    conceptsPrimary: [],
+                    conceptsSecondary: []
+                },
+                'npr.org': {
                     conceptsPrimary: [],
                     conceptsSecondary: []
                 }

@@ -79,7 +79,9 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                 "twitter.com": true,
                 "wikipedia.infobox": true,
                 "boxfish.com": true,
-                "nytimes.article": true
+//                "nytimes.article": true
+                "guardian.com": true,
+                "npr.org": true
             },
             "food": {
                 "bing.com": true,
@@ -330,6 +332,17 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                 );
                             });
                         }
+
+                        //************** this is just for experimenting with the look of ads, it's not real ***************
+                        //inject fake ad card for testing
+                        if(find.val() == "syria"){
+                            gridwrapper_columns.append(
+                                $('<div data-cardtype="bing.news" class="card"/>').append(
+                                    $('<img src="images/bing-favicon.png"/><a class="result-title" style="background-color: yellow;" href="http://www.hks.harvard.edu/degrees/masters/mpp/curriculum/pacs-and-concentrations/iga-concentration">Sponsored: Harvard Kennedy School - International and Global Affairs Concentration</a>')
+                                )
+                            );
+                        }
+
                         break;
 
                     case 'bing.com':
@@ -346,16 +359,15 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                 );
                             });
 
-
-
                             //************** this is just for experimenting with the look of ads, it's not real ***************
                             //inject fake ad card for testing
-                            gridwrapper_columns.append(
-                                $('<div data-cardtype="bing.com" class="card"/>').append(
-                                    $('<img src="images/bing-favicon.png"/><a class="result-title" style="background-color: yellow;" src="https://www.facebook.com/Cheetos">Hungry? Try Flaming Hot Cheetos</a>'),
-                                    $('<p class="result-snippet">Yum Yum</p>')
-                                )
-                            );
+                            if(find.val() == "oxygen"){
+                                gridwrapper_columns.append(
+                                    $('<div data-cardtype="bing.com" class="card"/>').append(
+                                        $('<img src="images/bing-favicon.png"/><a class="result-title" style="background-color: yellow;" href="http://homepage.oxygen.com/">Sponsored: Oxygen Network</a>')
+                                    )
+                                );
+                            }
 
 //                            if(!window.hasColumnsLayout) {
 //                                window.hasColumnsLayout = true;
@@ -671,6 +683,16 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
                             });
                         }
+
+                        //************** this is just for experimenting with the look of ads, it's not real ***************
+                        //inject fake ad card for testing
+                        if(find.val() == "cut the rope"){
+                            gridwrapper_columns.append(
+                                $('<div data-cardtype="firefox.marketplace" class="card"/>').append(
+                                    $('<img src="images/firefox-marketplace-16x16.png"/><a class="result-title" style="background-color: yellow;" href="http://www.cuttherope.ie/">Sponsored: Cut the Rope</a>')
+                                )
+                            );
+                        }
                         break;
 
                     case 'nytimes.article':
@@ -683,8 +705,6 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
                         var json = $.parseJSON(data.result);
                         var articles = json.response.docs;
-
-                        console.log(articles)
 
                         if (articles) {
                             articles.forEach(function (item, index, list) {
@@ -714,6 +734,48 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                         }
                         break;
 
+                    case 'guardian.com':
+                        var json = $.parseJSON(data.result);
+                        var articles = json.response.results;
+
+                        if (articles) {
+                            articles.forEach(function (item, index, list) {
+                                gridwrapper_columns.append(
+                                    $('<div data-cardtype="guardian.com" class="card"/>').append(
+                                        $('<img src="images/guardian-logo-16.png"/><a class="result-title"/>').html(item.webTitle).attr('href', item.webUrl),
+                                        $('<p class="result-snippet"/>').html(item.webPublicationDate)
+                                    )
+                                );
+
+                            });
+                        }
+
+                        break;
+
+                    case 'npr.org':
+                        console.log("npr articles")
+                        var json = $.parseJSON(data.result);
+
+                        var articles = json.list.story;
+
+                        if (articles) {
+                            articles.forEach(function (item, index, list) {
+
+                                var link = ""
+                                if(item.link && item.link.length > 0){
+                                    link = item.link[0].$text;
+                                }
+                                gridwrapper_columns.append(
+                                    $('<div data-cardtype="npr.org" class="card"/>').append(
+                                        $('<img src="images/npr-logo-16.png"/><a class="result-title"/>').html(item.title.$text).attr('href', link)
+//                                        $('<p class="result-snippet"/>').html(item.webPublicationDate)
+                                    )
+                                );
+
+                            });
+                        }
+
+                        break;
                     case 'en.wikipedia.org':
                         var article = data.result;
 
