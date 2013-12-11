@@ -1,18 +1,31 @@
-/*body { min-width: 750px; }*/
+html,body {
+    background: url("../images/birdbg2.jpg") no-repeat center center fixed;
+    -webkit-background-size: cover;  /*For WebKit*/
+    -moz-background-size: cover;     /*Mozilla*/
+    -o-background-size: cover;       /*Opera*/
+    background-size: cover;          /*Generic*/
+}
+* {
+    /* needed to make header fit to edge of top of screen */
+    margin:0px;
+    padding:0px;
+}
 
 @font-face {
-    font-family: OpenSans;
-    src: url('OpenSans-Regular.ttf');
+    font-family: FiraSansOT;
+    src: url('FiraSansOT-Regular.otf');
 }
 
 /****************************************/
 /* Initial settings */
 /****************************************/
-.news,
-.food,
-.local,
-.apps
-{
+/* hide the other categories in the left side menu
+    so that we only show providers for Web, our default category */
+[data-category="news"],
+[data-category="food"],
+[data-category="local"],
+[data-category="apps"]
+ {
     display: none;
 }
 
@@ -20,65 +33,58 @@
 /* header layout w/ search category buttons */
 /****************************************/
 #header {
-    /* centering using flexbox b/c lord knows i tried all the usual margin and text-align tricks
-    and span, label and input aren't digging it*/
+    /* keep header stick to the top & float over other elements */
+    position:fixed;
+    top:0;
+    z-index:10;
+
+    background: #353F48;
+    height: 45px;
+    width: 100%;
+
     display: -webkit-box;
     display: -moz-box;
     display: flex;
 
     flex-direction: row;
     flex-wrap: nowrap;
-    justify-content: center;
-
-    -webkit-box-pack: center;
-    -moz-box-pack: center;
-    box-pack: center;
-    /*end centering tricks*/
-
-    /*background: #F0F0F0;*/
-    height: 65px;
-    margin-left: 80px !important;
 }
 
 #search-category {
     float:left;
-    top: 0;
+    margin-left: 8px;
 }
 
 #search-category label {
     float:left;
-    width:130px;
-    margin:4px;
-    background-color:#EFEFEF;
-    border-radius:4px;
-    border:1px solid #D0D0D0;
-    overflow:auto;
+    width:80px;
+    height: 45px;
 }
 
 #search-category label span {
-    font-family: OpenSans;
-    text-align:center;
-    font-size: 24px;
-    padding:13px 0px;
-    display:block;
+    display:block; /* maintain nice block spacing for the category "buttons" at top */
+    color: #F1F1F1;
+    font-family: FiraSansOT;
+    text-align:center; /* center text in "buttons" */
+    font-size: 14px;
+    line-height: 33px;
 }
 
 #search-category label input {
+    /* hide the radio buttons offscreen */
     position:absolute;
     top:-20px;
 }
 
-/* search category button - selected */
-#search-category input:checked + span {
-    background-color: orange;
-    color: white;
-}
-
 /* search category button - default state */
 #search-category .search-category-button {
-    background-color:#F0F0F0;
-    color: black;
-    vertical-align: top;
+    margin-top: 10px; /* this is to force the orange underline down to be even with the header bottom */
+    margin-bottom: 0;
+}
+
+/* search category button - selected */
+#search-category input:checked + span {
+    border-bottom: 2px solid orange;
 }
 
 /****************************************/
@@ -86,81 +92,82 @@
 /****************************************/
 
 #fifi-find-box {
-    text-align: center; /* center the input and submit button */
-    margin-top: 1px; /* needed this b/c the find box was too close to the header and
-            something was overlapping, so the input wasn't centering correctly in it's parent div (this) */
-    padding: 3px;
-    width: 720px;
-    height: 72px;
-    padding-top: 30px;
-    text-align: center;
-    margin: 0 auto;
-
-    position: relative;
-    /*display: -webkit-box;*/
-    /*display: -moz-box;*/
-    /*display: flex;*/
-
-    /*flex-direction: row;*/
-    /*flex-wrap: nowrap;*/
-    /*justify-content: center;*/
-
-    /*-webkit-box-pack: center;*/
-    /*-moz-box-pack: center;*/
-    /*box-pack: center;*/
+    float:left;
+    margin-top: 6px;
+    margin-left: 6px;
 }
 
-#fifi-find {
-    -webkit-appearance: none;
-    font-size: 24px;
-    height: 72px;
+#fifi-find { /*the input element for the search bar at top*/
+    /*-webkit-appearance: none;*/
+    /*font-size: 24px;*/
+    float:left;
+    height: 30px;
     width: 400px;
+
     color: #424F5A;
-    background-image: url('../images/magglass.png');
-    background-repeat: no-repeat;
-    background-position: 0px 0px;
+    /*background-position: 0px 0px;*/
     background-color: #f5f5f5;
     border: 1px solid #E1E1E1;
-    padding: 0 110px 0 82px;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
+
+    /*padding: 0 110px 0 82px;*/
+    padding-left: 13px;
+
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
 }
 
 #fifi-find:focus {
-    -webkit-appearance: none;
-    background-image: url('../images/magglass.png');
-    background-repeat: no-repeat;
-    background-position: 0px -60px ;
     background-color: #FCFCFC;
     border: 1px solid #E1E1E1;
 }
 
-/*TODO clean this up*/
-input[type=submit] {
-    -webkit-appearance: none;
-    border-radius: 5px;
-    -moz-border-radius: 5px;
-    -webkit-border-radius: 5px;
-    border:none;
-    width: 100px;
-    height: 66px;
-    background: #E66000;
-    text-align: center;
-    font-size: 22px;
-    color: white;
-    position: absolute;
-    top: 30px;
-    right:67px;
-    z-index: 99;
-    margin: 3px 3px 0 0;
-    -webkit-appearance: none;
+.submitButton input {
+    /*float:left;*/
+    background:url("../images/magGlassBG.png") no-repeat;
+    width: 47px;
+    height: 30px;
+    border: none;
+
+    border-radius: 3px;
+    -moz-border-radius: 3px;
+    -webkit-border-radius: 3px;
+
+    margin-left: 4px;
+    margin-top: 7px;
+
+    /*background: #E66000;*/
 }
 
-input[type=submit]:active {
-    -webkit-appearance: none;
-    background: #EB9111;
-}
+/*input[type=submit] {*/
+    /*background: url('../images/magnifyGlassWhite.png') no-repeat;*/
+    /*float:left;*/
+
+    /*border:none;*/
+    /*border-radius: 3px;*/
+    /*-moz-border-radius: 3px;*/
+    /*-webkit-border-radius: 3px;*/
+
+
+    /*width: 45px;*/
+    /*height: 33px;*/
+
+    /*margin-left: 4px;*/
+
+    /*background: #E66000;*/
+    /*font-size: 22px;*/
+    /*color: white;*/
+    /*position: absolute;*/
+    /*top: 30px;*/
+    /*right:67px;*/
+    /*z-index: 99;*/
+    /*margin: 3px 3px 0 0;*/
+/*}*/
+
+/*input[type=submit]:active {*/
+    /*-webkit-appearance: none;*/
+    /*background: #EB9111;*/
+/*}*/
 
 /****************************************/
 /* suggestions                          */
@@ -184,10 +191,10 @@ input[type=submit]:active {
 }
 
 .suggestions .primary, .suggestions-secondary .secondary {
-    font-family: OpenSans;
+    font-family: FiraSansOT;
     position: relative;
-    min-width: 96px;
-    height: 40px;
+    min-width: 76px;
+    height: 36px;
     display: block;
     float: left;
     padding: 18px 20px 0 20px;
@@ -195,6 +202,7 @@ input[type=submit]:active {
     border-radius: 5px;
     /*background: #FBFAF9;*/
     border: 1px solid #D4DDE4;
+    background-color: white;
 }
 
 .suggestions .primary span,
@@ -215,7 +223,7 @@ input[type=submit]:active {
     max-width: 1200px;
     min-width: 300px;
     margin: 50px auto;
-    margin-left: 80px !important;
+    margin-left: 80px;
 
     display: -webkit-box;
     display: -moz-box;
@@ -232,6 +240,7 @@ input[type=submit]:active {
 }
 
 #columns {
+    margin-top: 20px;
     /*-webkit-column-count: 3;*/
     -webkit-column-gap: 30px;
     -webkit-column-fill: auto;
@@ -245,7 +254,8 @@ input[type=submit]:active {
 
 .card {
     position: relative;
-    font-family: OpenSans;
+    font-family: FiraSansOT;
+    background-color: white;
 
     width: 250px;
     height: 150px;
@@ -283,7 +293,7 @@ input[type=submit]:active {
 
 .big-card {
     position: relative;
-    font-family: OpenSans;
+    font-family: FiraSansOT;
 
     width: 250px;
 
@@ -367,6 +377,7 @@ input[type=submit]:active {
 .infobox {
     /*position: absolute;*/
     border: 1px solid #aaa;
+    background-color: white;
     /*background-color: #f9f9f9;*/
     color: black;
     /*margin: 0.5em 0 0.5em 1em;*/
@@ -384,7 +395,7 @@ input[type=submit]:active {
 
 .wikipedia-info-card {
     display: inline-block;
-    font-family: OpenSans;
+    font-family: FiraSansOT;
     /*background: #FEFEFE;*/
     /*background: -webkit-linear-gradient(45deg, #FFF, #F9F9F9);*/
     /*border: 2px solid #FAFAFA;*/
@@ -438,7 +449,7 @@ and span, label and input aren't digging it*/
 .leftSlideMenu {
     /*background: #47a3da;*/
     position: fixed;
-    font-family: OpenSans;
+    font-family: FiraSansOT;
 }
 
 /*.leftSlideMenu h3 {*/
@@ -503,22 +514,126 @@ and span, label and input aren't digging it*/
     /*filter: grayscale(100%);*/
 /*}*/
 
-img.providerInactive {
-    filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\' filterRes=\'800\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); /* Firefox 10+ */
-    filter: gray; /* IE6-9 */
-    -webkit-filter: grayscale(100%); /* Chrome 19+ & Safari 6+ */
-    -webkit-transition: all .6s ease; /* Fade to color for Chrome and Safari */
-    -webkit-backface-visibility: hidden; /* Fix for transition flickering */
+/*img.providerInactive {*/
+    /*filter: url("data:image/svg+xml;utf8,<svg xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'grayscale\' filterRes=\'800\'><feColorMatrix type=\'matrix\' values=\'0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0\'/></filter></svg>#grayscale"); *//* Firefox 10+ */
+    /*filter: gray; *//* IE6-9 */
+    /*-webkit-filter: grayscale(100%); *//* Chrome 19+ & Safari 6+ */
+    /*-webkit-transition: all .6s ease; *//* Fade to color for Chrome and Safari */
+    /*-webkit-backface-visibility: hidden; *//* Fix for transition flickering */
+/*}*/
+
+/*img.blur {*/
+    /*width:45; height:45px; */
+    /*-webkit-filter: blur(1px);*/
+    /*-moz-filter: blur(1px);*/
+    /*-o-filter: blur(1px);*/
+    /*-ms-filter: blur(1px);*/
+    /*filter: blur(1px);*/
+/*}*/
+
+
+
+/****************************************/
+/* Slide Out Left Menu */
+/****************************************/
+ul#navigation {
+    position: fixed;
+    margin: 0px;
+    padding: 0px;
+    top: 50px;
+    left: 0px;
+    list-style: none;
+    z-index:9999;
+}
+ul#navigation li {
+    width: 80px;
+}
+ul#navigation li a {
+    display: block;
+    margin-left: -2px;
+    width: 80px;
+    height: 60px;
+    background-color:#424F59;
+    background-repeat:no-repeat;
+    background-position:center center;
+    border:1px solid #353F48;
+    border-radius:0px 10px 10px 0px;
+    -webkit-border-bottom-right-radius: 10px;
+    -webkit-border-top-right-radius: 10px;
+    /*-moz-box-shadow: 0px 4px 3px #000;*/
+    /*-webkit-box-shadow: 0px 4px 3px #000;*/
+    /*opacity: 0.6;*/
 }
 
-img.blur {
-    /*width:45; height:45px; */
-    -webkit-filter: blur(1px);
-    -moz-filter: blur(1px);
-    -o-filter: blur(1px);
-    -ms-filter: blur(1px);
-    filter: blur(1px);
+/* bing side tab */
+ul#navigation li a {
+    /* centering using flexbox b/c lord knows i tried all the usual margin and text-align tricks
+    and span, label and input aren't digging it*/
+    display: -webkit-box;
+    display: -moz-box;
+    display: flex;
+
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+
+    -webkit-box-pack: center;
+    -moz-box-pack: center;
+    box-pack: center;
+    /*end centering tricks*/
 }
+
+/* Bing tabs */
+ul#navigation [data-provider="bing.com"] .providerActive {
+    background: #F4BD27;
+}
+
+ul#navigation [data-provider="bing.com"] img {
+    margin-top: 12px;
+    margin-left: 10px;
+}
+
+ul#navigation [data-provider="bing.com"] input {
+    margin-top: 26px;
+    margin-left: 8px;
+    margin-right: -2px;
+}
+
+/* Bing News tabs */
+ul#navigation [data-provider="bing.news"] .providerActive {
+    background: #F4BD27;
+}
+
+ul#navigation [data-provider="bing.news"] img {
+    margin-top: 12px;
+    margin-left: 10px;
+}
+
+ul#navigation [data-provider="bing.news"] input {
+    margin-top: 26px;
+    margin-left: 8px;
+    margin-right: -2px;
+}
+
+/* Twitter tabs */
+ul#navigation [data-provider="twitter.com"] .providerActive {
+    background: #5E9FCA;
+}
+
+ul#navigation [data-provider="twitter.com"] img {
+    margin-top: 14px;
+    margin-left: 4px;
+}
+
+ul#navigation [data-provider="twitter.com"] input {
+    margin-top: 26px;
+    margin-left: 4px;
+}
+
+ul#navigation [data-category="add_providers"] {
+    background: #424F59;
+}
+
 
 /****************************************/
 /* Search Provider "store" */

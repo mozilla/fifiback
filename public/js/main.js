@@ -1,5 +1,7 @@
 //TODO
+//1.
 //1. fix 3 locations of settings - autoset, config.json, main.js
+
 
 require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
     'base/geo', 'settings', 'nunjucks', 'templates', 'moment'],
@@ -108,7 +110,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
             fifiSearchPreferences = JSON.parse(myLocalStorage.getItem(localStoragePrefsString));
 
             $(document).ready(function () {
-                //go through the stored settings, find the disabled search providers and add providerInactive css class (once the DOM is ready of course)
+                //go through the stored settings, find the disabled search providers and remove the providerActive css class (once the DOM is ready of course)
                 for (var searchCat in fifiSearchPreferences) {
                     for (var provider in fifiSearchPreferences[searchCat]) {
                         //get the boolean state for the search provider (turned on or off)
@@ -116,7 +118,8 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                         if (!state) {
                             //the provider was disabled by the user, update the CSS
                             var dataAttrs = "[data-category='" + searchCat + "'][data-provider='" + provider + "']";
-                            $(dataAttrs).hide();
+                            hideProviderTab($(dataAttrs).find("a"),$(dataAttrs).find("input"));
+                            console.log($(dataAttrs))
                         }
                     }
                 }
@@ -194,12 +197,12 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
             $("#search-category label input").click(function (event) {
                 searchCategory = $(event.currentTarget).data().category;
                 console.log("changed search category: " + searchCategory);
-                $("." + searchCategory).show();
+                $("[data-category="+searchCategory+"]").show();
 
                 //hide the other search providers on the left
                 searchCategories.forEach(function (value) {
                     if (value != searchCategory) {
-                        $("." + value).hide();
+                        $("[data-category="+value+"]").hide();
                     }
                 });
             });
@@ -298,7 +301,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                         $('<div data-cardtype="boxfish.com" class="card"/>').append(
 //                                            "<p>Mentioned on ...</p>",
                                             $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html("TV Transcript: " + item.program.name).attr('href', item.Url),
-                                            $('<p class="result-snippet"/>').html(item.text)
+                                            $('<p class="result-snippet"/>').html(item.text.elide(250))
                                         )
                                     )
                                 });
@@ -309,7 +312,7 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
                                     gridwrapper_columns.append(
                                         $('<div data-cardtype="boxfish.com" class="card"/>').append(
                                             $('<img src="images/boxfish-favicon.png"/><a class="result-title"/>').html("TV Program: " + item.name).attr('href', item.Url),
-                                            $('<p class="result-snippet"/>').html(item.description)
+                                            $('<p class="result-snippet"/>').html(item.description.elide(250))
                                         )
                                     )
                                 });
@@ -980,20 +983,43 @@ require(['jquery', 'socket.io', 'base/find', 'base/autoset', 'base/utils',
 
         //handle clicks on the search provider icons in the left menu
         $(".provider").on('click', function () {
+
+            console.log("provider click: ")
+            console.log($(this).find("a"))
+
             //hide the cards from this search provider in the grid
-            if ($(this).hasClass("providerInactive")) {
+            if ($(this).find("a").hasClass("providerActive")) {
+                //Make this provider inactive and hide the cards for this search provider
+                console.log("hiding cards")
+                $("[data-cardtype='" + $(this).data('provider') + "']").hide();
+
+                //slide the provider tab over to indicate inactive
+                hideProviderTab($(this).find("a"), $(this).find('input'));
+            } else {
                 //provider was inactive, re-activate it
                 $("[data-cardtype='" + $(this).data('provider') + "']").show();
-            } else {
-                $("[data-cardtype='" + $(this).data('provider') + "']").hide();
+                console.log("showing cards")
+
+                //slid the provider tab back to the right to indicate active
+                showProviderTab($(this).find("a"), $(this).find('input'));
             }
 
             //save the settings in localStorage
             toggleProviderStatus($(this).data('category'), $(this).data('provider'))
-
-            //grey out the icon to indicate inactive or return to normal state
-            $(this).toggleClass("providerInactive");
         });
+
+        function showProviderTab(atag, input) {
+            atag.addClass("providerActive")
+            atag.stop().animate({'marginLeft':'-2px'},200);
+            input.prop('checked', true);
+        }
+
+        function hideProviderTab(atag,input){
+            atag.removeClass("providerActive")
+            atag.stop().animate({'marginLeft':'-30px'},200);
+            input.prop('checked', false);
+        }
+
 
         /**********************************************/
         /* Search Provider store */
@@ -1067,8 +1093,9 @@ function showNewsViz() {
     document.getElementById("wrapper").style.visibility = "hidden";
     document.getElementById("boxfishNewsViz").style.visibility = "visible";
 }
-})
-;
+
+
+});
 /* end function require pass params */
 
 
