@@ -299,6 +299,7 @@ html,body {
 .big-card {
     position: relative;
     font-family: FiraSansOT;
+    background: #FFFFFF;
 
     width: 250px;
 
